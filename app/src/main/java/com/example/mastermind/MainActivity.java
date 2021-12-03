@@ -2,9 +2,11 @@ package com.example.mastermind;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -99,8 +101,14 @@ public class MainActivity extends AppCompatActivity {
     // Create button for each possible number
     private void createNumberButtons() {
         for (int i = numberMin; i <= numberMax; ++i) {
+
+            // Set button params
             final Button button = new Button(this);
-            button.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(150, 150);
+            params.setMargins(30, 0, 30, 0);
+            button.setLayoutParams(params);
+            button.setTextSize(24);
+            button.setBackgroundColor(Color.CYAN);
             button.setId(i);
             button.setText(Integer.toString(i));
             Log.i(TAG, "Button id: " + button.getId() + ", Button text: " + button.getText());
