@@ -34,30 +34,6 @@
         tools:layout_editor_absoluteY="76dp" />
 
     <Button
-        android:id="@+id/btnNumber1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="151dp"
-        android:text="1"
-        tools:layout_editor_absoluteX="48dp"
-        tools:layout_editor_absoluteY="180dp" />
-
-    <Button
-        android:id="@+id/btnNumber2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="142dp"
-        android:layout_marginEnd="131dp"
-        android:text="2"
-        tools:layout_editor_absoluteX="212dp"
-        tools:layout_editor_absoluteY="178dp" />
-
-    <Button
         android:id="@+id/btnResetGuess"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,4 +52,15 @@
         android:layout_marginStart="70dp"
         android:layout_marginBottom="441dp"
         android:text="Submit" />
+
+    <LinearLayout
+        android:id="@+id/llContainerNumbers"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="295dp"
+        android:orientation="horizontal"></LinearLayout>
+
 </RelativeLayout>
