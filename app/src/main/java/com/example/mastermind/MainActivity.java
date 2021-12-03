@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<String> secretNumber;
     private ArrayList<TextView> listGuessBoxes;
-    private ArrayList<Button> listPossibleNumbers;
     private int secretNumberLength;
     private int numberMin;
     private int numberMax;
