@@ -1,5 +1,6 @@
 package com.example.mastermind;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
@@ -13,13 +14,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codepath.asynchttpclient.AsyncHttpClient;
+import com.codepath.asynchttpclient.RequestParams;
+import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import okhttp3.Headers;
+
 public class MainActivity extends AppCompatActivity {
 
+    public static final String INTEGER_GENERATOR_API = "https://www.random.org/integers";
     public static final String TAG = "MainActivity";
 
     private LinearLayout llContainerNumbers;
@@ -28,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnResetGuess;
     private Button btnSubmitGuess;
 
-    private ArrayList<String> secretNumber;
+    private String[] secretNumber;
     private ArrayList<TextView> listGuessBoxes;
     private int secretNumberLength;
     private int numberMin;
@@ -48,11 +56,11 @@ public class MainActivity extends AppCompatActivity {
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
 
         secretNumberLength = 2;
-        secretNumber = new ArrayList<>(Arrays.asList("2", "2"));
-
         numberMin = 1;
         numberMax = 2;
         listGuessBoxes = new ArrayList<>(Arrays.asList(tvGuessBox1, tvGuessBox2));
+
+        querySecretNumber();
 
         createNumberButtons();
 
@@ -72,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < secretNumberLength; ++i) {
                     Log.i(TAG, "Checking guess");
                     for (int j = 0; j < secretNumberLength; ++j) {
-                        Log.i(TAG, "Check: " + listGuessBoxes.get(i).getText() + secretNumber.get(j));
-                        if (listGuessBoxes.get(i).getText().equals(secretNumber.get(j))) {
+                        Log.i(TAG, "Check: " + listGuessBoxes.get(i).getText() + secretNumber[j]);
+                        if (listGuessBoxes.get(i).getText().equals(secretNumber[j])) {
                             correctGuess = true;
                             if (i == j) {
                                 correctLocation = true;
@@ -98,11 +106,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Get random secret number from Integer Generator API
+    private void querySecretNumber() {
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("num", secretNumberLength);
+        params.put("min", numberMin);
+        params.put("max", numberMax);
+        params.put("col", 1);               // Get 1 number per line for return response
+        params.put("base", 10);             // Use base 10 number system
+        params.put("format", "plain");      // Get return response in plain text
+        params.put("rnd", "new");           // Generate a new random number
+
+        client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, String response) {
+                Log.d(TAG, "Integer Generator API request success!");
+                secretNumber = response.split("\n");
+                Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
+            }
+
+            @Override
+            public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
+                                  @Nullable Throwable throwable) {
+                Log.d(TAG, "Integer Generator API request failure.");
+            }
+        });
+    }
+
     // Create button for each possible number
     private void createNumberButtons() {
-        for (int i = numberMin; i <= numberMax; ++i) {
 
-            // Set button params
+        // Set button params
+        for (int i = numberMin; i <= numberMax; ++i) {
             final Button button = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(150, 150);
             params.setMargins(30, 0, 30, 0);
@@ -123,7 +160,8 @@ public class MainActivity extends AppCompatActivity {
                         ++currentGuessPosition;
                     }
                     else {
-                        Toast.makeText(MainActivity.this, "Submit or reset guess", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Submit or reset guess",
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -134,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Reset all guess boxes
     private void resetGuessBoxes() {
+
         for (TextView guessBox : listGuessBoxes) {
             guessBox.setText("?");
         }
