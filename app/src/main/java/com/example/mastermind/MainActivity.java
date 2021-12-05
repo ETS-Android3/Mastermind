@@ -44,9 +44,12 @@ public class MainActivity extends AppCompatActivity {
     private int secretNumberLength;
     private int numberMin;
     private int numberMax;
+    private int numberOfGuessesAllowed;
+    private int numberOfGuessesUsed;
+
     private TextView listGuessBoxes[];
     private int currentGuessPosition = 0;
-    private PastGuess pastGuesses[];
+    private PastGuess[] pastGuesses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +66,12 @@ public class MainActivity extends AppCompatActivity {
         secretNumberLength = 2;
         numberMin = 1;
         numberMax = 2;
+        numberOfGuessesAllowed = 3;
+        numberOfGuessesUsed = 0;
+        pastGuesses = new PastGuess[numberOfGuessesAllowed];
 
-        listGuessBoxes = new TextView[2];
+
+        listGuessBoxes = new TextView[secretNumberLength];
         listGuessBoxes[0] = tvGuessBox1;
         listGuessBoxes[1] = tvGuessBox2;
 
@@ -74,11 +81,16 @@ public class MainActivity extends AppCompatActivity {
         btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validGuess()) {
-                    submitGuess();
+                if (remainingGuessesExist()) {
+                    if (validGuess()) {
+                        submitGuess();
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Invalid guess. Choose a number for each position.", Toast.LENGTH_LONG).show();
+                    }
                 }
                 else {
-                    Toast.makeText(MainActivity.this, "Invalid guess. Choose a number for each position.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "No guesses remaining!", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -166,6 +178,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private Boolean remainingGuessesExist() {
+        return numberOfGuessesUsed < numberOfGuessesAllowed;
+    }
+
     // Check if every position in guess has valid number
     private Boolean validGuess() {
 
@@ -207,7 +223,9 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.i(TAG, "Matched numbers in guess: " + matchedGuess.toString());
 
-        //pastGuesses.add(new PastGuess(guess, matchedGuess));
+        pastGuesses[numberOfGuessesUsed] = new PastGuess(guess, matchedGuess);
+        Log.i(TAG, "Guess recorded: " + Arrays.toString(pastGuesses[numberOfGuessesUsed].getGuess()));
+        ++numberOfGuessesUsed;
 
         int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
         int numCorrectValue = Collections.frequency(matchedGuess, 1);
@@ -229,7 +247,13 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Wrong numbers!", Toast.LENGTH_LONG).show();
         }
 
-        resetGuessBoxes();
+        if (remainingGuessesExist()) {
+            resetGuessBoxes();
+        }
+        else {
+            Toast.makeText(MainActivity.this, "Game over!", Toast.LENGTH_LONG).show();
+            gameOver();
+        }
     }
 
     // Reset all guess boxes
@@ -239,5 +263,9 @@ public class MainActivity extends AppCompatActivity {
             guessBox.setText("?");
         }
         currentGuessPosition = 0;
+    }
+
+    private void gameOver() {
+
     }
 }
