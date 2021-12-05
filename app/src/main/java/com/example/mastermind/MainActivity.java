@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnSubmitGuess;
 
     private String[] secretNumber;
-    private int[] numbersInSecretNumber;
+    private int[] frequencyOfSecretNumbers;
     private int secretNumberLength;
     private int numberMin;
     private int numberMax;
@@ -136,12 +136,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
 
                 // Store secret number's number value
-                numbersInSecretNumber = new int[numberMax + 1];
+                frequencyOfSecretNumbers = new int[numberMax + 1];
                 for (String number : secretNumber) {
-                    numbersInSecretNumber[Integer.parseInt(number)] = 1;
+                    frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
                 }
                 Log.i(TAG, "Numbers in secret number: "
-                        + Arrays.toString(numbersInSecretNumber));
+                        + Arrays.toString(frequencyOfSecretNumbers));
             }
 
             @Override
@@ -221,14 +221,18 @@ public class MainActivity extends AppCompatActivity {
            Index does not matter, there is no specific order
         */
         ArrayList<Integer> matchedGuess = new ArrayList<>();
+        int[] frequencyOfSecretNumbersCopy =
+                Arrays.copyOf(frequencyOfSecretNumbers, numberMax + 1);
 
         for (int i = 0; i < secretNumberLength; ++i) {
             if (guess[i].equals(secretNumber[i])
-                    && numbersInSecretNumber[Integer.parseInt(guess[i])] == 1) {
+                    && frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
                 matchedGuess.add(2);
+                frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
             }
-            else if (numbersInSecretNumber[Integer.parseInt(guess[i])] == 1) {
+            else if (frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 1) {
                 matchedGuess.add(1);
+                frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
             }
         }
         Log.i(TAG, "Matched numbers in guess: " + matchedGuess.toString());
