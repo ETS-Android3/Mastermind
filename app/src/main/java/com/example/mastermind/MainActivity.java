@@ -24,6 +24,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import okhttp3.Headers;
 
@@ -43,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private int secretNumberLength;
     private int numberMin;
     private int numberMax;
-    private ArrayList<TextView> listGuessBoxes;
+    private TextView listGuessBoxes[];
     private int currentGuessPosition = 0;
-    private ArrayList<PastGuess> pastGuesses;
+    private PastGuess pastGuesses[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,10 @@ public class MainActivity extends AppCompatActivity {
         secretNumberLength = 2;
         numberMin = 1;
         numberMax = 2;
-        listGuessBoxes = new ArrayList<>(Arrays.asList(tvGuessBox1, tvGuessBox2));
+
+        listGuessBoxes = new TextView[2];
+        listGuessBoxes[0] = tvGuessBox1;
+        listGuessBoxes[1] = tvGuessBox2;
 
         querySecretNumber();
         createNumberButtons();
@@ -147,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if (currentGuessPosition < secretNumberLength) {
-                        TextView currentGuessBox = listGuessBoxes.get(currentGuessPosition);
+                        TextView currentGuessBox = listGuessBoxes[currentGuessPosition];
                         currentGuessBox.setText(button.getText());
                         ++currentGuessPosition;
                     }
@@ -166,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean validGuess() {
 
         for (int i = 0; i < secretNumberLength; ++i) {
-            if (listGuessBoxes.get(i).getText().toString().equals("?")) {
+            if (listGuessBoxes[i].getText().toString().equals("?")) {
                 return false;
             }
         }
@@ -177,7 +181,14 @@ public class MainActivity extends AppCompatActivity {
     // Submit valid guess
     private void submitGuess() {
 
-        /* Records how many value OR value and location
+        // Add each value from guess box into guess
+        String[] guess = new String[secretNumberLength];
+
+        for (int i = 0; i < secretNumberLength; ++i) {
+            guess[i] = listGuessBoxes[i].getText().toString();
+        }
+
+        /* Record how many value OR value and location
            matches exist between guess and secret number
                 1: value match in secret code
                 2: value and location match in secret code
@@ -185,18 +196,18 @@ public class MainActivity extends AppCompatActivity {
         */
         ArrayList<Integer> matchedGuess = new ArrayList<>();
 
-        for (int i = 0; i < secretNumberLength; ++i) {
-            String currentNumber = listGuessBoxes.get(i).getText().toString();
-            if (currentNumber.equals(secretNumber[i])
-                    && numbersInSecretNumber[Integer.parseInt(currentNumber)] == 1) {
+        for (int j = 0; j < secretNumberLength; ++j) {
+            if (guess[j].equals(secretNumber[j])
+                    && numbersInSecretNumber[Integer.parseInt(guess[j])] == 1) {
                 matchedGuess.add(2);
             }
-            else if (numbersInSecretNumber[Integer.parseInt(currentNumber)] == 1) {
+            else if (numbersInSecretNumber[Integer.parseInt(guess[j])] == 1) {
                 matchedGuess.add(1);
             }
         }
         Log.i(TAG, "Matched numbers in guess: " + matchedGuess.toString());
 
+        //pastGuesses.add(new PastGuess(guess, matchedGuess));
 
         int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
         int numCorrectValue = Collections.frequency(matchedGuess, 1);
