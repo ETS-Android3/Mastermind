@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.ViewHolder> {
 
@@ -65,10 +66,28 @@ public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.View
             pastGuessBoxes[0] = tvPastGuessBox1;
             pastGuessBoxes[1] = tvPastGuessBox2;
 
+            ImageView[] matchedGuessHints = new ImageView[secretNumberLength];
+            matchedGuessHints[0] = ivMatchedGuess1;
+            matchedGuessHints[1] = ivMatchedGuess2;
+            int guessHintPosition = 0;
+
             Log.i("PastGuessAdapter", "Past guess to RV: " + Arrays.toString(pastGuess.getGuess()));
 
+            // Bind past guess numbers to guess boxes
             for (int i = 0; i < secretNumberLength; ++i) {
                 pastGuessBoxes[i].setText(pastGuess.getGuess()[i]);
+            }
+
+            int valueAndLocationMatches = Collections.frequency(pastGuess.getMatchedGuess(), 2);
+            for (int i = 0; i < valueAndLocationMatches; ++i) {
+                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_launcher_foreground);
+                ++guessHintPosition;
+            }
+
+            int valueMatches = Collections.frequency(pastGuess.getMatchedGuess(), 1);
+            for (int i = 0; i < valueMatches; ++i) {
+                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_launcher_background);
+                ++guessHintPosition;
             }
         }
     }

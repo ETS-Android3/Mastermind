@@ -71,19 +71,12 @@ public class MainActivity extends AppCompatActivity {
         // Set game mode: easy, medium, hard
         secretNumberLength = 2;
         numberMin = 1;
-        numberMax = 2;
+        numberMax = 5;
         numberOfGuessesAllowed = 3;
         numberOfGuessesUsed = 0;
 
         // Set up recycler view for past guesses
         pastGuesses = new ArrayList<>();
-//        String[] testGuess = new String[2];
-//        testGuess [0] = "1";
-//        testGuess [1] = "1";
-//        ArrayList testMatchGuess = new ArrayList();
-//        testMatchGuess.add(1);
-//        testMatchGuess.add(2);
-//        pastGuesses.add(new PastGuess(testGuess, testMatchGuess));
         pastGuessAdapter = new PastGuessAdapter(this, pastGuesses);
         rvPastGuesses.setAdapter(pastGuessAdapter);
         rvPastGuesses.setLayoutManager(new LinearLayoutManager(this));
@@ -229,42 +222,43 @@ public class MainActivity extends AppCompatActivity {
         */
         ArrayList<Integer> matchedGuess = new ArrayList<>();
 
-        for (int j = 0; j < secretNumberLength; ++j) {
-            if (guess[j].equals(secretNumber[j])
-                    && numbersInSecretNumber[Integer.parseInt(guess[j])] == 1) {
+        for (int i = 0; i < secretNumberLength; ++i) {
+            if (guess[i].equals(secretNumber[i])
+                    && numbersInSecretNumber[Integer.parseInt(guess[i])] == 1) {
                 matchedGuess.add(2);
             }
-            else if (numbersInSecretNumber[Integer.parseInt(guess[j])] == 1) {
+            else if (numbersInSecretNumber[Integer.parseInt(guess[i])] == 1) {
                 matchedGuess.add(1);
             }
         }
         Log.i(TAG, "Matched numbers in guess: " + matchedGuess.toString());
 
+        // Add new guess into PastGuesses
         pastGuesses.add(0, new PastGuess(guess, matchedGuess));
         pastGuessAdapter.notifyItemInserted(0);
         Log.i(TAG, "Guess recorded: " + Arrays.toString(pastGuesses.get(numberOfGuessesUsed).getGuess()));
 
-        ++numberOfGuessesUsed;
+        guessUsed();
 
-        int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
-        int numCorrectValue = Collections.frequency(matchedGuess, 1);
-
-        if (numCorrectValueAndLocation == secretNumberLength) {
-            Toast.makeText(MainActivity.this, "Correct!", Toast.LENGTH_LONG).show();
-        }
-        else if (numCorrectValueAndLocation > 0
-                && numCorrectValue > 0) {
-            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " + numCorrectValue + " correct value", Toast.LENGTH_LONG).show();
-        }
-        else if (numCorrectValueAndLocation > 0) {
-            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " , Toast.LENGTH_LONG).show();
-        }
-        else if (numCorrectValue > 0) {
-            Toast.makeText(MainActivity.this, numCorrectValue + " correct value but incorrect location", Toast.LENGTH_LONG).show();
-        }
-        else {
-            Toast.makeText(MainActivity.this, "Wrong numbers!", Toast.LENGTH_LONG).show();
-        }
+//        int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
+//        int numCorrectValue = Collections.frequency(matchedGuess, 1);
+//
+//        if (numCorrectValueAndLocation == secretNumberLength) {
+//            Toast.makeText(MainActivity.this, "Correct!", Toast.LENGTH_LONG).show();
+//        }
+//        else if (numCorrectValueAndLocation > 0
+//                && numCorrectValue > 0) {
+//            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " + numCorrectValue + " correct value", Toast.LENGTH_LONG).show();
+//        }
+//        else if (numCorrectValueAndLocation > 0) {
+//            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " , Toast.LENGTH_LONG).show();
+//        }
+//        else if (numCorrectValue > 0) {
+//            Toast.makeText(MainActivity.this, numCorrectValue + " correct value but incorrect location", Toast.LENGTH_LONG).show();
+//        }
+//        else {
+//            Toast.makeText(MainActivity.this, "Wrong numbers!", Toast.LENGTH_LONG).show();
+//        }
 
         if (remainingGuessesExist()) {
             resetGuessBoxes();
@@ -273,6 +267,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Game over!", Toast.LENGTH_LONG).show();
             gameOver();
         }
+    }
+
+    // Increment guesses used !! add guesses left
+    private void guessUsed() {
+        ++numberOfGuessesUsed;
     }
 
     // Reset all guess boxes
