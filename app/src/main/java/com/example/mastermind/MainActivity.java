@@ -20,8 +20,10 @@ import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import okhttp3.Headers;
 
@@ -37,11 +39,13 @@ public class MainActivity extends AppCompatActivity {
     private Button btnSubmitGuess;
 
     private String[] secretNumber;
-    private ArrayList<TextView> listGuessBoxes;
+    private int[] numbersInSecretNumber;
     private int secretNumberLength;
     private int numberMin;
     private int numberMax;
+    private ArrayList<TextView> listGuessBoxes;
     private int currentGuessPosition = 0;
+    private ArrayList<PastGuess> pastGuesses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,47 +65,24 @@ public class MainActivity extends AppCompatActivity {
         listGuessBoxes = new ArrayList<>(Arrays.asList(tvGuessBox1, tvGuessBox2));
 
         querySecretNumber();
-
         createNumberButtons();
+
+        btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validGuess()) {
+                    submitGuess();
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "Invalid guess. Choose a number for each position.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         btnResetGuess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 resetGuessBoxes();
-            }
-        });
-
-        btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Boolean correctGuess = false;
-                Boolean correctLocation = false;
-
-                for (int i = 0; i < secretNumberLength; ++i) {
-                    Log.i(TAG, "Checking guess");
-                    for (int j = 0; j < secretNumberLength; ++j) {
-                        Log.i(TAG, "Check: " + listGuessBoxes.get(i).getText() + secretNumber[j]);
-                        if (listGuessBoxes.get(i).getText().equals(secretNumber[j])) {
-                            correctGuess = true;
-                            if (i == j) {
-                                correctLocation = true;
-                            }
-                        }
-                    }
-                }
-
-                resetGuessBoxes();
-
-                Log.i(TAG, "Correct Guess: " + correctGuess + ", Correct Location: " + correctLocation);
-                if (correctGuess && correctLocation) {
-                    Toast.makeText(MainActivity.this, "At least 1 correct number and location", Toast.LENGTH_SHORT).show();
-                }
-                else if (correctGuess) {
-                    Toast.makeText(MainActivity.this, "At least 1 correct number", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(MainActivity.this, "Wrong numbers!", Toast.LENGTH_SHORT).show();
-                }
             }
         });
     }
@@ -114,23 +95,34 @@ public class MainActivity extends AppCompatActivity {
         params.put("num", secretNumberLength);
         params.put("min", numberMin);
         params.put("max", numberMax);
-        params.put("col", 1);               // Get 1 number per line for return response
+        params.put("col", 1);               // Return response arranged by 1 column per line
         params.put("base", 10);             // Use base 10 number system
         params.put("format", "plain");      // Get return response in plain text
-        params.put("rnd", "new");           // Generate a new random number
+        params.put("rnd", "new");           // Generate new random number
 
         client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, String response) {
                 Log.d(TAG, "Integer Generator API request success!");
+
+                // Store secret number's number value and index location
                 secretNumber = response.split("\n");
                 Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
+
+                // Store secret number's number value
+                numbersInSecretNumber = new int[numberMax + 1];
+                for (String number : secretNumber) {
+                    numbersInSecretNumber[Integer.parseInt(number)] = 1;
+                }
+                Log.i(TAG, "Numbers in secret number: "
+                        + Arrays.toString(numbersInSecretNumber));
             }
 
             @Override
             public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
                                   @Nullable Throwable throwable) {
                 Log.d(TAG, "Integer Generator API request failure.");
+                // !! Pop up window to notify error and generate new number
             }
         });
     }
@@ -168,6 +160,65 @@ public class MainActivity extends AppCompatActivity {
 
             llContainerNumbers.addView(button);
         }
+    }
+
+    // Check if every position in guess has valid number
+    private Boolean validGuess() {
+
+        for (int i = 0; i < secretNumberLength; ++i) {
+            if (listGuessBoxes.get(i).getText().toString().equals("?")) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Submit valid guess
+    private void submitGuess() {
+
+        /* Records how many value OR value and location
+           matches exist between guess and secret number
+                1: value match in secret code
+                2: value and location match in secret code
+           Index does not matter, there is no specific order
+        */
+        ArrayList<Integer> matchedGuess = new ArrayList<>();
+
+        for (int i = 0; i < secretNumberLength; ++i) {
+            String currentNumber = listGuessBoxes.get(i).getText().toString();
+            if (currentNumber.equals(secretNumber[i])
+                    && numbersInSecretNumber[Integer.parseInt(currentNumber)] == 1) {
+                matchedGuess.add(2);
+            }
+            else if (numbersInSecretNumber[Integer.parseInt(currentNumber)] == 1) {
+                matchedGuess.add(1);
+            }
+        }
+        Log.i(TAG, "Matched numbers in guess: " + matchedGuess.toString());
+
+
+        int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
+        int numCorrectValue = Collections.frequency(matchedGuess, 1);
+
+        if (numCorrectValueAndLocation == secretNumberLength) {
+            Toast.makeText(MainActivity.this, "Correct!", Toast.LENGTH_LONG).show();
+        }
+        else if (numCorrectValueAndLocation > 0
+                && numCorrectValue > 0) {
+            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " + numCorrectValue + " correct value", Toast.LENGTH_LONG).show();
+        }
+        else if (numCorrectValueAndLocation > 0) {
+            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " , Toast.LENGTH_LONG).show();
+        }
+        else if (numCorrectValue > 0) {
+            Toast.makeText(MainActivity.this, numCorrectValue + " correct value but incorrect location", Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(MainActivity.this, "Wrong numbers!", Toast.LENGTH_LONG).show();
+        }
+
+        resetGuessBoxes();
     }
 
     // Reset all guess boxes
