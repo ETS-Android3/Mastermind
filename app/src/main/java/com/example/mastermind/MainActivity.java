@@ -2,6 +2,8 @@ package com.example.mastermind;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
 import android.nfc.Tag;
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String INTEGER_GENERATOR_API = "https://www.random.org/integers";
     public static final String TAG = "MainActivity";
 
+    private RecyclerView rvPastGuesses;
+    protected PastGuessAdapter pastGuessAdapter;
     private LinearLayout llContainerNumbers;
     private TextView tvGuessBox1;
     private TextView tvGuessBox2;
@@ -49,13 +53,14 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView listGuessBoxes[];
     private int currentGuessPosition = 0;
-    private PastGuess[] pastGuesses;
+    private ArrayList<PastGuess> pastGuesses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        rvPastGuesses = findViewById(R.id.rvPastGuesses);
         llContainerNumbers = findViewById(R.id.llContainerNumbers);
 
         tvGuessBox1 = findViewById(R.id.tvGuessBox1);
@@ -63,13 +68,25 @@ public class MainActivity extends AppCompatActivity {
         btnResetGuess = findViewById(R.id.btnResetGuess);
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
 
+        // Set game mode: easy, medium, hard
         secretNumberLength = 2;
         numberMin = 1;
         numberMax = 2;
         numberOfGuessesAllowed = 3;
         numberOfGuessesUsed = 0;
-        pastGuesses = new PastGuess[numberOfGuessesAllowed];
 
+        // Set up recycler view for past guesses
+        pastGuesses = new ArrayList<>();
+//        String[] testGuess = new String[2];
+//        testGuess [0] = "1";
+//        testGuess [1] = "1";
+//        ArrayList testMatchGuess = new ArrayList();
+//        testMatchGuess.add(1);
+//        testMatchGuess.add(2);
+//        pastGuesses.add(new PastGuess(testGuess, testMatchGuess));
+        pastGuessAdapter = new PastGuessAdapter(this, pastGuesses);
+        rvPastGuesses.setAdapter(pastGuessAdapter);
+        rvPastGuesses.setLayoutManager(new LinearLayoutManager(this));
 
         listGuessBoxes = new TextView[secretNumberLength];
         listGuessBoxes[0] = tvGuessBox1;
@@ -223,8 +240,10 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.i(TAG, "Matched numbers in guess: " + matchedGuess.toString());
 
-        pastGuesses[numberOfGuessesUsed] = new PastGuess(guess, matchedGuess);
-        Log.i(TAG, "Guess recorded: " + Arrays.toString(pastGuesses[numberOfGuessesUsed].getGuess()));
+        pastGuesses.add(0, new PastGuess(guess, matchedGuess));
+        pastGuessAdapter.notifyItemInserted(0);
+        Log.i(TAG, "Guess recorded: " + Arrays.toString(pastGuesses.get(numberOfGuessesUsed).getGuess()));
+
         ++numberOfGuessesUsed;
 
         int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);

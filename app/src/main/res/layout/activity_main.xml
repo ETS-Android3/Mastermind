@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,8 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="53dp"
-        android:layout_marginEnd="235dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="242dp"
         android:text="?"
         android:textSize="34sp"
         tools:layout_editor_absoluteX="81dp"
@@ -39,8 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="206dp"
-        android:layout_marginTop="256dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginTop="640dp"
         android:text="Reset" />
 
     <Button
@@ -49,8 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="70dp"
-        android:layout_marginBottom="441dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginBottom="42dp"
         android:text="Submit" />
 
     <LinearLayout
@@ -59,8 +60,19 @@
         android:layout_height="88dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="1dp"
-        android:layout_marginBottom="295dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="114dp"
         android:orientation="horizontal"></LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPastGuesses"
+        android:layout_width="match_parent"
+        android:layout_height="381dp"
+        android:layout_above="@+id/llContainerNumbers"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="120dp"
+        android:layout_marginBottom="29dp" />
 
 </RelativeLayout>
