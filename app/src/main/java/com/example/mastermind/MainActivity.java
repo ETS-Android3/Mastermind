@@ -1,15 +1,12 @@
 package com.example.mastermind;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -18,19 +15,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codepath.asynchttpclient.AsyncHttpClient;
-import com.codepath.asynchttpclient.RequestParams;
-import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
-
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import okhttp3.Headers;
 
 public class MainActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener, GameEndDialog.GameEndDialogListener {
@@ -40,7 +26,8 @@ public class MainActivity extends AppCompatActivity
 
     private RecyclerView rvPastGuesses;
     protected PastGuessAdapter pastGuessAdapter;
-    private LinearLayout llContainerNumbers;
+    private LinearLayout llContainerNumbers1;
+    private LinearLayout llContainerNumbers2;
     private TextView tvGuessBox1;
     private TextView tvGuessBox2;
     private TextView tvGuessRemaining;
@@ -67,7 +54,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         rvPastGuesses = findViewById(R.id.rvPastGuesses);
-        llContainerNumbers = findViewById(R.id.llContainerNumbers);
+        llContainerNumbers1 = findViewById(R.id.llContainerNumbers1);
+        llContainerNumbers2 = findViewById(R.id.llContainerNumbers2);
 
         tvGuessBox1 = findViewById(R.id.tvGuessBox1);
         tvGuessBox2 = findViewById(R.id.tvGuessBox2);
@@ -210,10 +198,22 @@ public class MainActivity extends AppCompatActivity
     private void createNumberButtons() {
 
         // Remove buttons, if exists
-        llContainerNumbers.removeAllViews();
+        llContainerNumbers1.removeAllViews();
+        llContainerNumbers2.removeAllViews();
+
+        // Create number buttons in containers
+        createNumberButtonsInContainer(
+                llContainerNumbers1, numberMin, numberMax / 2);
+        createNumberButtonsInContainer(
+                llContainerNumbers2, (numberMax / 2) + 1, numberMax);
+    }
+
+    // Create number buttons in container
+    private void createNumberButtonsInContainer(
+            LinearLayout llContainerNumbers, int numberStart, int numberEnd) {
 
         // Set button params
-        for (int i = numberMin; i <= numberMax; ++i) {
+        for (int i = numberStart; i <= numberEnd; ++i) {
             final Button button = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(150, 150);
             params.setMargins(30, 0, 30, 0);
