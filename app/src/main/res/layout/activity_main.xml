@@ -7,109 +7,107 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tvGuessBox1"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/rlContainerGameStatus"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="242dp"
-        android:text="?"
-        android:textSize="34sp"
-        tools:layout_editor_absoluteX="81dp"
-        tools:layout_editor_absoluteY="76dp" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tvGuessBox2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="203dp"
-        android:layout_marginTop="49dp"
-        android:text="?"
-        android:textSize="34sp"
-        tools:layout_editor_absoluteX="253dp"
-        tools:layout_editor_absoluteY="76dp" />
+        <ImageView
+            android:id="@+id/ivGuessRemaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="8dp"
+            app:srcCompat="@android:drawable/ic_notification_overlay" />
 
-    <TextView
-        android:id="@+id/tvGuessRemaining"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="3dp"
-        android:layout_toEndOf="@+id/imageView"
-        android:text="TextView"
-        android:textSize="20sp"
-        tools:text="10" />
+        <TextView
+            android:id="@+id/tvGuessRemaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="3dp"
+            android:layout_toEndOf="@+id/ivGuessRemaining"
+            android:text="TextView"
+            android:textSize="20sp"
+            tools:text="10" />
 
-    <Button
-        android:id="@+id/btnLevels"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="-10dp"
-        android:layout_marginEnd="-12dp"
-        android:background="@android:color/transparent"
-        android:onClick="showPopupLevels"
-        android:text="Level"
-        android:textColor="@color/black" />
-
-    <Button
-        android:id="@+id/btnResetGuess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="83dp"
-        android:layout_marginBottom="34dp"
-        android:text="Reset"
-        android:background="@android:color/transparent"
-        android:textColor="@color/black"/>
-
-    <Button
-        android:id="@+id/btnSubmitGuess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="96dp"
-        android:layout_marginBottom="33dp"
-        android:text="Enter" />
+        <Button
+            android:id="@+id/btnLevels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="-10dp"
+            android:background="@android:color/transparent"
+            android:onClick="showPopupLevels"
+            android:text="Level"
+            android:textColor="@color/black" />
+    </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/llContainerNumbers"
+        android:id="@+id/llContainerGuessBoxes"
         android:layout_width="match_parent"
-        android:layout_height="88dp"
-        android:layout_above="@+id/btnSubmitGuess"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="-2dp"
-        android:layout_marginBottom="16dp"
-        android:orientation="horizontal"></LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlContainerGameStatus"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvGuessBox1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="?"
+            android:textSize="34sp" />
+
+        <TextView
+            android:id="@+id/tvGuessBox2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="?"
+            android:textSize="34sp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPastGuesses"
         android:layout_width="match_parent"
-        android:layout_height="381dp"
+        android:layout_height="300dp"
         android:layout_above="@+id/llContainerNumbers"
-        android:layout_below="@+id/tvGuessBox1"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp" />
+        android:layout_below="@+id/llContainerGuessBoxes" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llContainerNumbers"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_above="@+id/llContainerUserOptions"
+        android:gravity="center"
+        android:orientation="horizontal" />
+
+    <LinearLayout
+        android:id="@+id/llContainerUserOptions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="8dp"
-        app:srcCompat="@android:drawable/ic_notification_overlay" />
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnResetGuess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="10dp"
+            android:background="@android:color/transparent"
+            android:text="Reset"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/btnSubmitGuess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="10dp"
+            android:text="Enter" />
+    </LinearLayout>
 
 </RelativeLayout>
