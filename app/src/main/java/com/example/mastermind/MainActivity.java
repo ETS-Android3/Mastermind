@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements GameEndDialog.Gam
                 matchedGuess.add(2);
                 frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
             }
-            else if (frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 1) {
+            else if (frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
                 matchedGuess.add(1);
                 frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
             }
