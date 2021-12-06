@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Mastermind</string>
     <string name="win_dialogue">SUCCESSFUL ESCAPE</string>
-    <string name="win_dialogue_detail">You successfully escaped from cursed mansion!</string>
-    <string name="lose_dialogue">FAILED</string>
+    <string name="win_dialogue_detail">You successfully escaped from the cursed mansion!</string>
+    <string name="lose_dialogue">FAILED ESCAPE</string>
     <string name="lose_dialogue_detail">
         You failed to escape and became a permanent member in the cursed mansion!</string>
 

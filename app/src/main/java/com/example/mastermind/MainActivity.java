@@ -30,7 +30,7 @@ import java.util.List;
 
 import okhttp3.Headers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GameEndDialog.GameEndDialogListener {
 
     public static final String INTEGER_GENERATOR_API = "https://www.random.org/integers";
     public static final String TAG = "MainActivity";
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private int numberMax;
     private int numberOfGuessesAllowed;
     private int numberOfGuessesUsed;
+    private Boolean gameWon;
 
     private TextView listGuessBoxes[];
     private int currentGuessPosition = 0;
@@ -244,12 +245,13 @@ public class MainActivity extends AppCompatActivity {
 
         guessUsed();
 
-//        int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
-//        int numCorrectValue = Collections.frequency(matchedGuess, 1);
-//
-//        if (numCorrectValueAndLocation == secretNumberLength) {
-//            Toast.makeText(MainActivity.this, "Correct!", Toast.LENGTH_LONG).show();
-//        }
+        int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
+        int numCorrectValue = Collections.frequency(matchedGuess, 1);
+
+        if (numCorrectValueAndLocation == secretNumberLength) {
+            Log.i(TAG, "Game won!");
+            gameWon();
+        }
 //        else if (numCorrectValueAndLocation > 0
 //                && numCorrectValue > 0) {
 //            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " + numCorrectValue + " correct value", Toast.LENGTH_LONG).show();
@@ -268,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
             resetGuessBoxes();
         }
         else {
-            Toast.makeText(MainActivity.this, "Game over!", Toast.LENGTH_LONG).show();
+            Log.i(TAG, "Game over!");
             gameOver();
         }
     }
@@ -287,7 +289,33 @@ public class MainActivity extends AppCompatActivity {
         currentGuessPosition = 0;
     }
 
-    private void gameOver() {
+    private void resetGame() {
+        querySecretNumber();
+        numberOfGuessesUsed = 0;
+        currentGuessPosition = 0;
 
+        resetGuessBoxes();
+        pastGuesses.clear();
+        pastGuessAdapter.notifyDataSetChanged();
+    }
+
+    private void gameWon() {
+        gameWon = true;
+        openGameEndDialog();
+    }
+
+    private void gameOver() {
+        gameWon = false;
+        openGameEndDialog();
+    }
+
+    private void openGameEndDialog() {
+        GameEndDialog gameEndDialog = new GameEndDialog(gameWon);
+        gameEndDialog.show(getSupportFragmentManager(), "GameEndDialogue");
+    }
+
+    @Override
+    public void onTryAgainClicked() {
+        resetGame();
     }
 }
