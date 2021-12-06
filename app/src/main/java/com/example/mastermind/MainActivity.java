@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private int numberMax;
     private int guessAllotted;
     private int numberOfGuessesUsed;
+    private int guessRemaining;
     private Boolean gameWon;
 
     private TextView listGuessBoxes[];
@@ -91,8 +92,9 @@ public class MainActivity extends AppCompatActivity
         listGuessBoxes[0] = tvGuessBox1;
         listGuessBoxes[1] = tvGuessBox2;
 
-        querySecretNumber();
         createNumberButtons();
+        updateGuessRemaining();
+        querySecretNumber();
 
         btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,10 +220,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private Boolean remainingGuessExists() {
-        return numberOfGuessesUsed < guessAllotted;
-    }
-
     // Check if every position in guess has valid number
     private Boolean validGuess() {
 
@@ -287,6 +285,7 @@ public class MainActivity extends AppCompatActivity
                     + Arrays.toString(pastGuesses.get(positionAdded).getGuess()));
 
             guessUsed();
+            updateGuessRemaining();
 
             if (remainingGuessExists()) {
                 resetGuessBoxes();
@@ -297,9 +296,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private Boolean remainingGuessExists() {
+        return numberOfGuessesUsed < guessAllotted;
+    }
+
     // Increment guesses used !! add guesses left
     private void guessUsed() {
         ++numberOfGuessesUsed;
+    }
+
+    private void updateGuessRemaining() {
+        tvGuessRemaining.setText(Integer.toString(guessAllotted - numberOfGuessesUsed));
     }
 
     // Reset all guess boxes and current guess position
@@ -316,6 +323,7 @@ public class MainActivity extends AppCompatActivity
 //        querySecretNumber();
 //        numberOfGuessesUsed = 0;
 //
+//        updateGuessRemaining();
 //        resetGuessBoxes();
 //        pastGuesses.clear();
 //        pastGuessAdapter.notifyDataSetChanged();
