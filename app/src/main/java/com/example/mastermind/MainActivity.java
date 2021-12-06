@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity
     private LinearLayout llContainerNumbers;
     private TextView tvGuessBox1;
     private TextView tvGuessBox2;
+    private TextView tvGuessRemaining;
     private Button btnResetGuess;
     private Button btnSubmitGuess;
 
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity
     private int secretNumberLength;
     private int numberMin;
     private int numberMax;
-    private int numberOfGuessesAllowed;
+    private int guessAllotted;
     private int numberOfGuessesUsed;
     private Boolean gameWon;
 
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity
 
         tvGuessBox1 = findViewById(R.id.tvGuessBox1);
         tvGuessBox2 = findViewById(R.id.tvGuessBox2);
+        tvGuessRemaining = findViewById(R.id.tvGuessRemaining);
         btnResetGuess = findViewById(R.id.btnResetGuess);
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
 
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         secretNumberLength = 2;
         numberMin = 1;
         numberMax = 5;
-        numberOfGuessesAllowed = 3;
+        guessAllotted = 3;
         numberOfGuessesUsed = 0;
 
         // Set up recycler view for past guesses
@@ -95,16 +97,12 @@ public class MainActivity extends AppCompatActivity
         btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (remainingGuessesExist()) {
-                    if (validGuess()) {
-                        submitGuess();
-                    }
-                    else {
-                        Toast.makeText(MainActivity.this, "Invalid guess. Choose a number for each position.", Toast.LENGTH_LONG).show();
-                    }
+                if (validGuess()) {
+                    submitGuess();
                 }
                 else {
-                    Toast.makeText(MainActivity.this, "No guesses remaining!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this,
+                            "Choose a number for each position", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -220,8 +218,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private Boolean remainingGuessesExist() {
-        return numberOfGuessesUsed < numberOfGuessesAllowed;
+    private Boolean remainingGuessExists() {
+        return numberOfGuessesUsed < guessAllotted;
     }
 
     // Check if every position in guess has valid number
@@ -241,68 +239,61 @@ public class MainActivity extends AppCompatActivity
 
         // Add each value from guess box into guess
         String[] guess = new String[secretNumberLength];
-
         for (int i = 0; i < secretNumberLength; ++i) {
             guess[i] = listGuessBoxes[i].getText().toString();
         }
+        Log.i(TAG, "Current guess: " + Arrays.toString(guess));
 
-        /* Record how many value OR value and location
-           matches exist between guess and secret number
-                1: value match in secret code
-                2: value and location match in secret code
-           Index does not matter, there is no specific order
-        */
-        ArrayList<Integer> matchedGuess = new ArrayList<>();
-        int[] frequencyOfSecretNumbersCopy =
-                Arrays.copyOf(frequencyOfSecretNumbers, numberMax + 1);
-
+        // Check if guess matches secret number
+        Boolean matchSecretNumber = true;
         for (int i = 0; i < secretNumberLength; ++i) {
-            if (guess[i].equals(secretNumber[i])
-                    && frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
-                matchedGuess.add(2);
-                frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
-            }
-            else if (frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
-                matchedGuess.add(1);
-                frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
+            if (!guess[i].equals(secretNumber[i])) {
+                matchSecretNumber = false;
             }
         }
-        Log.i(TAG, "Matched numbers in guess: " + matchedGuess.toString());
 
-        // Add new guess into PastGuesses
-        pastGuesses.add(0, new PastGuess(guess, matchedGuess));
-        pastGuessAdapter.notifyItemInserted(0);
-        Log.i(TAG, "Guess recorded: " + Arrays.toString(pastGuesses.get(numberOfGuessesUsed).getGuess()));
-
-        guessUsed();
-
-        int numCorrectValueAndLocation = Collections.frequency(matchedGuess, 2);
-        int numCorrectValue = Collections.frequency(matchedGuess, 1);
-
-        if (numCorrectValueAndLocation == secretNumberLength) {
+        if (matchSecretNumber) {
             Log.i(TAG, "Game won!");
             gameWon();
         }
-//        else if (numCorrectValueAndLocation > 0
-//                && numCorrectValue > 0) {
-//            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " + numCorrectValue + " correct value", Toast.LENGTH_LONG).show();
-//        }
-//        else if (numCorrectValueAndLocation > 0) {
-//            Toast.makeText(MainActivity.this, numCorrectValueAndLocation + " correct value and location + " , Toast.LENGTH_LONG).show();
-//        }
-//        else if (numCorrectValue > 0) {
-//            Toast.makeText(MainActivity.this, numCorrectValue + " correct value but incorrect location", Toast.LENGTH_LONG).show();
-//        }
-//        else {
-//            Toast.makeText(MainActivity.this, "Wrong numbers!", Toast.LENGTH_LONG).show();
-//        }
-
-        if (remainingGuessesExist()) {
-            resetGuessBoxes();
-        }
         else {
-            Log.i(TAG, "Game over!");
-            gameOver();
+            /* Record how many value OR value and location
+               matches exist between guess and secret number
+                    1: value match in secret code
+                    2: value and location match in secret code
+               Index does not matter, there is no specific order
+            */
+            ArrayList<Integer> matchedGuess = new ArrayList<>();
+            int[] frequencyOfSecretNumbersCopy =
+                    Arrays.copyOf(frequencyOfSecretNumbers, numberMax + 1);
+
+            for (int i = 0; i < secretNumberLength; ++i) {
+                if (guess[i].equals(secretNumber[i])
+                        && frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
+                    matchedGuess.add(2);
+                    frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
+                } else if (frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
+                    matchedGuess.add(1);
+                    frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
+                }
+            }
+            Log.i(TAG, "Matched numbers: " + matchedGuess.toString());
+
+            // Add new guess into PastGuesses
+            int positionAdded = 0;
+            pastGuesses.add(positionAdded, new PastGuess(guess, matchedGuess));
+            pastGuessAdapter.notifyItemInserted(positionAdded);
+            Log.i(TAG, "Guess added to pastGuesses: "
+                    + Arrays.toString(pastGuesses.get(positionAdded).getGuess()));
+
+            guessUsed();
+
+            if (remainingGuessExists()) {
+                resetGuessBoxes();
+            } else {
+                Log.i(TAG, "Game over!");
+                gameOver();
+            }
         }
     }
 
@@ -311,7 +302,7 @@ public class MainActivity extends AppCompatActivity
         ++numberOfGuessesUsed;
     }
 
-    // Reset all guess boxes
+    // Reset all guess boxes and current guess position
     private void resetGuessBoxes() {
 
         for (TextView guessBox : listGuessBoxes) {
@@ -320,31 +311,39 @@ public class MainActivity extends AppCompatActivity
         currentGuessPosition = 0;
     }
 
+    // Reset game: get new secret number, clear past guesses, reset guesses used
     private void resetGame() {
-        querySecretNumber();
-        numberOfGuessesUsed = 0;
-        currentGuessPosition = 0;
+//        querySecretNumber();
+//        numberOfGuessesUsed = 0;
+//
+//        resetGuessBoxes();
+//        pastGuesses.clear();
+//        pastGuessAdapter.notifyDataSetChanged();
 
-        resetGuessBoxes();
-        pastGuesses.clear();
-        pastGuessAdapter.notifyDataSetChanged();
+        finish();
+        startActivity(getIntent());
+        overridePendingTransition(0,0);
     }
 
+    // Open win dialog when user wins
     private void gameWon() {
         gameWon = true;
         openGameEndDialog();
     }
 
+    // Open lose dialog when user wins
     private void gameOver() {
         gameWon = false;
         openGameEndDialog();
     }
 
+    // Call game end dialog when user wins or loses
     private void openGameEndDialog() {
         GameEndDialog gameEndDialog = new GameEndDialog(gameWon);
         gameEndDialog.show(getSupportFragmentManager(), "GameEndDialogue");
     }
 
+    // Reset game when user clicks "Try Again" at game end
     @Override
     public void onTryAgainClicked() {
         resetGame();

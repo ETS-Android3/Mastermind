@@ -71,7 +71,9 @@ public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.View
             matchedGuessHints[1] = ivMatchedGuess2;
             int guessHintPosition = 0;
 
-            Log.i("PastGuessAdapter", "Past guess to RV: " + Arrays.toString(pastGuess.getGuess()));
+            Log.i("PastGuessAdapter", "From pastGuess in RV, "
+                    + "guess: " + Arrays.toString(pastGuess.getGuess())
+                    + ", matched numbers: " + pastGuess.getMatchedGuess().toString());
 
             // Bind past guess numbers to guess boxes
             for (int i = 0; i < secretNumberLength; ++i) {
