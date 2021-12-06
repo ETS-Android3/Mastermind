@@ -20,11 +20,13 @@ public class GameEndDialog extends AppCompatDialogFragment {
         this.gameWon = gameWon;
     }
 
+    // Build dialog when game ends
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
+        // Set win message if user won or lose message if use lost
         if (gameWon) {
             builder.setTitle(R.string.win_dialogue)
                     .setMessage(R.string.win_dialogue_detail)

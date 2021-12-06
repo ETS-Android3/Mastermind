@@ -169,24 +169,47 @@ public class MainActivity extends AppCompatActivity
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.easy:
-                Toast.makeText(MainActivity.this, "Easy",
-                        Toast.LENGTH_SHORT).show();
+                levelEasy();
+                updateLevel();
                 return true;
             case R.id.normal:
-                Toast.makeText(MainActivity.this, "Normal",
-                        Toast.LENGTH_SHORT).show();
+                levelMedium();
+                updateLevel();
                 return true;
             case R.id.challenge:
-                Toast.makeText(MainActivity.this, "Challenge",
-                        Toast.LENGTH_SHORT).show();
+                levelChallenge();
+                updateLevel();
                 return true;
             default:
                 return false;
         }
     }
 
+    private void updateLevel() {
+        createNumberButtons();
+        resetGame();
+    }
+
+    private void levelEasy() {
+        numberMin = 1;
+        numberMax = 2;
+    }
+
+    private void levelMedium() {
+        numberMin = 1;
+        numberMax = 3;
+    }
+
+    private void levelChallenge() {
+        numberMin = 1;
+        numberMax = 5;
+    }
+
     // Create button for each possible number
     private void createNumberButtons() {
+
+        // Remove buttons, if exists
+        llContainerNumbers.removeAllViews();
 
         // Set button params
         for (int i = numberMin; i <= numberMax; ++i) {
@@ -320,17 +343,17 @@ public class MainActivity extends AppCompatActivity
 
     // Reset game: get new secret number, clear past guesses, reset guesses used
     private void resetGame() {
-//        querySecretNumber();
-//        numberOfGuessesUsed = 0;
-//
-//        updateGuessRemaining();
-//        resetGuessBoxes();
-//        pastGuesses.clear();
-//        pastGuessAdapter.notifyDataSetChanged();
+        querySecretNumber();
+        numberOfGuessesUsed = 0;
 
-        finish();
-        startActivity(getIntent());
-        overridePendingTransition(0,0);
+        updateGuessRemaining();
+        resetGuessBoxes();
+        pastGuesses.clear();
+        pastGuessAdapter.notifyDataSetChanged();
+
+//        finish();
+//        startActivity(getIntent());
+//        overridePendingTransition(0,0);
     }
 
     // Open win dialog when user wins

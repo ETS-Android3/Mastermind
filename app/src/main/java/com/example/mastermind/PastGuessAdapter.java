@@ -59,6 +59,7 @@ public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.View
             ivMatchedGuess2 = itemView.findViewById(R.id.ivMatchedGuess2);
         }
 
+        // Bind pastGuess' guess value and matched numbers
         public void bind(PastGuess pastGuess) {
             int secretNumberLength = pastGuess.getGuess().length;
 
