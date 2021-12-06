@@ -15,6 +15,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity
 
     private RecyclerView rvPastGuesses;
     protected PastGuessAdapter pastGuessAdapter;
+
+    private LinearLayout llContainerGuessBoxes;
     private LinearLayout llContainerNumbers1;
     private LinearLayout llContainerNumbers2;
     private TextView tvGuessBox1;
@@ -53,9 +57,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        rvPastGuesses = findViewById(R.id.rvPastGuesses);
+        llContainerGuessBoxes = findViewById(R.id.llContainerGuessBoxes);
         llContainerNumbers1 = findViewById(R.id.llContainerNumbers1);
         llContainerNumbers2 = findViewById(R.id.llContainerNumbers2);
+        rvPastGuesses = findViewById(R.id.rvPastGuesses);
 
         tvGuessBox1 = findViewById(R.id.tvGuessBox1);
         tvGuessBox2 = findViewById(R.id.tvGuessBox2);
@@ -63,7 +68,7 @@ public class MainActivity extends AppCompatActivity
         btnResetGuess = findViewById(R.id.btnResetGuess);
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
 
-        // Set game mode: easy, medium, hard
+        // Set default game mode
         secretNumberLength = 2;
         numberMin = 1;
         numberMax = 5;
@@ -76,10 +81,7 @@ public class MainActivity extends AppCompatActivity
         rvPastGuesses.setAdapter(pastGuessAdapter);
         rvPastGuesses.setLayoutManager(new LinearLayoutManager(this));
 
-        listGuessBoxes = new TextView[secretNumberLength];
-        listGuessBoxes[0] = tvGuessBox1;
-        listGuessBoxes[1] = tvGuessBox2;
-
+        createGuessBoxes();
         createNumberButtons();
         updateGuessRemaining();
         querySecretNumber();
@@ -192,6 +194,30 @@ public class MainActivity extends AppCompatActivity
     private void levelChallenge() {
         numberMin = 1;
         numberMax = 5;
+    }
+
+    // Create guess boxes
+    private void createGuessBoxes() {
+
+        listGuessBoxes = new TextView[secretNumberLength];
+
+        // Set guess box params
+        for (int i = 0; i < secretNumberLength; ++i) {
+            final TextView textView = new TextView(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(150, 150);
+            params.setMargins(30, 0, 30, 0);
+            textView.setLayoutParams(params);
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setTextSize(34);
+            textView.setBackgroundColor(Color.RED);
+            textView.setId(i);
+            textView.setText("?");
+            Log.i(TAG, "Guess box id: " + textView.getId() + ", Button text: " + textView.getText());
+
+            // Add new guess box to listGuessBoxes and guess box container
+            listGuessBoxes[i] = textView;
+            llContainerGuessBoxes.addView(textView);
+        }
     }
 
     // Create button for each possible number
