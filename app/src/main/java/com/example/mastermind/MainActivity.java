@@ -10,9 +10,11 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +32,8 @@ import java.util.List;
 
 import okhttp3.Headers;
 
-public class MainActivity extends AppCompatActivity implements GameEndDialog.GameEndDialogListener {
+public class MainActivity extends AppCompatActivity
+        implements PopupMenu.OnMenuItemClickListener, GameEndDialog.GameEndDialogListener {
 
     public static final String INTEGER_GENERATOR_API = "https://www.random.org/integers";
     public static final String TAG = "MainActivity";
@@ -152,6 +155,34 @@ public class MainActivity extends AppCompatActivity implements GameEndDialog.Gam
                 // !! Pop up window to notify error and generate new number
             }
         });
+    }
+
+    // Create pop up menu for levels: easy, normal, challenge
+    public void showPopupLevels(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.popup_menu_levels);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.easy:
+                Toast.makeText(MainActivity.this, "Easy",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.normal:
+                Toast.makeText(MainActivity.this, "Normal",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.challenge:
+                Toast.makeText(MainActivity.this, "Challenge",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return false;
+        }
     }
 
     // Create button for each possible number
