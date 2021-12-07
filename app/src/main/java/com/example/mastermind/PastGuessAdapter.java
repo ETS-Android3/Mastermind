@@ -48,15 +48,23 @@ public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.View
 
         TextView tvPastGuessBox1;
         TextView tvPastGuessBox2;
+        TextView tvPastGuessBox3;
+        TextView tvPastGuessBox4;
         ImageView ivMatchedGuess1;
         ImageView ivMatchedGuess2;
+        ImageView ivMatchedGuess3;
+        ImageView ivMatchedGuess4;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPastGuessBox1 = itemView.findViewById(R.id.tvPastGuessBox1);
             tvPastGuessBox2 = itemView.findViewById(R.id.tvPastGuessBox2);
+            tvPastGuessBox3 = itemView.findViewById(R.id.tvPastGuessBox3);
+            tvPastGuessBox4 = itemView.findViewById(R.id.tvPastGuessBox4);
             ivMatchedGuess1 = itemView.findViewById(R.id.ivMatchedGuess1);
             ivMatchedGuess2 = itemView.findViewById(R.id.ivMatchedGuess2);
+            ivMatchedGuess3 = itemView.findViewById(R.id.ivMatchedGuess3);
+            ivMatchedGuess4 = itemView.findViewById(R.id.ivMatchedGuess4);
         }
 
         // Bind pastGuess' guess value and matched numbers
@@ -66,10 +74,14 @@ public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.View
             TextView[] pastGuessBoxes = new TextView[secretNumberLength];
             pastGuessBoxes[0] = tvPastGuessBox1;
             pastGuessBoxes[1] = tvPastGuessBox2;
+            pastGuessBoxes[2] = tvPastGuessBox3;
+            pastGuessBoxes[3] = tvPastGuessBox4;
 
             ImageView[] matchedGuessHints = new ImageView[secretNumberLength];
             matchedGuessHints[0] = ivMatchedGuess1;
             matchedGuessHints[1] = ivMatchedGuess2;
+            matchedGuessHints[2] = ivMatchedGuess3;
+            matchedGuessHints[3] = ivMatchedGuess4;
             int guessHintPosition = 0;
 
             Log.i("PastGuessAdapter", "From pastGuess in RV, "
