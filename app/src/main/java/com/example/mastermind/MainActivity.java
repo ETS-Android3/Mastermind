@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
         // Set default game mode
         secretNumberLength = 4;
         levelNormal();
-        guessAllotted = 5;
+        guessAllotted = 10;
         numberOfGuessesUsed = 0;
 
         // Set up recycler view for past guesses
@@ -212,7 +212,8 @@ public class MainActivity extends AppCompatActivity
             textView.setLayoutParams(params);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setTextSize(34);
-            textView.setBackgroundColor(Color.RED);
+            textView.setTextColor(getResources().getColor(R.color.text));
+            textView.setBackgroundColor(Color.TRANSPARENT);
             textView.setId(i);
             textView.setText("?");
             Log.i(TAG, "Guess box id: " + textView.getId() + ", Button text: " + textView.getText());
@@ -248,7 +249,8 @@ public class MainActivity extends AppCompatActivity
             params.setMargins(30, 0, 30, 0);
             button.setLayoutParams(params);
             button.setTextSize(24);
-            button.setBackgroundColor(Color.CYAN);
+            button.setTextColor(getResources().getColor(R.color.text));
+            button.setBackgroundColor(getResources().getColor(R.color.secondary_button));
             button.setId(i);
             button.setText(Integer.toString(i));
             Log.i(TAG, "Button id: " + button.getId() + ", Button text: " + button.getText());
@@ -263,7 +265,7 @@ public class MainActivity extends AppCompatActivity
                         ++currentGuessPosition;
                     }
                     else {
-                        Toast.makeText(MainActivity.this, "Submit or reset guess",
+                        Toast.makeText(MainActivity.this, "Enter or reset guess",
                                 Toast.LENGTH_SHORT).show();
                     }
                 }

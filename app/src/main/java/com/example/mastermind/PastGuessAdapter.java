@@ -95,13 +95,13 @@ public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.View
 
             int valueAndLocationMatches = Collections.frequency(pastGuess.getMatchedGuess(), 2);
             for (int i = 0; i < valueAndLocationMatches; ++i) {
-                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_launcher_foreground);
+                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_match_hint_value_location);
                 ++guessHintPosition;
             }
 
             int valueMatches = Collections.frequency(pastGuess.getMatchedGuess(), 1);
             for (int i = 0; i < valueMatches; ++i) {
-                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_launcher_background);
+                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_match_hint_value);
                 ++guessHintPosition;
             }
         }

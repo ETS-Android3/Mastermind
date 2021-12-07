@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/background_portrait">
 
     <RelativeLayout
         android:id="@+id/rlContainerGameStatus"
@@ -18,18 +19,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="8dp"
-            app:srcCompat="@android:drawable/ic_notification_overlay" />
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            app:srcCompat="@drawable/ic_guess_remaining" />
 
         <TextView
             android:id="@+id/tvGuessRemaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="3dp"
             android:layout_toEndOf="@+id/ivGuessRemaining"
             android:text="TextView"
+            android:textColor="@color/text"
             android:textSize="20sp"
             tools:text="10" />
 
@@ -38,11 +40,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="-10dp"
+            android:layout_centerVertical="true"
             android:background="@android:color/transparent"
             android:onClick="showPopupLevels"
             android:text="Level"
-            android:textColor="@color/black" />
+            android:textColor="@color/text" />
     </RelativeLayout>
 
     <LinearLayout
@@ -50,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rlContainerGameStatus"
+        android:layout_marginTop="30dp"
         android:gravity="center"
         android:orientation="horizontal"/>
 
@@ -58,7 +61,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/llContainerNumbersAll"
-        android:layout_below="@+id/llContainerGuessBoxes" />
+        android:layout_below="@+id/llContainerGuessBoxes"
+        android:layout_marginVertical="30dp"/>
 
     <LinearLayout
         android:id="@+id/llContainerNumbersAll"
@@ -100,7 +104,7 @@
             android:layout_marginVertical="10dp"
             android:background="@android:color/transparent"
             android:text="Reset"
-            android:textColor="@color/black" />
+            android:textColor="@color/text" />
 
         <Button
             android:id="@+id/btnSubmitGuess"
@@ -108,7 +112,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30dp"
             android:layout_marginVertical="10dp"
-            android:text="Enter" />
+            android:text="Enter"
+            android:backgroundTint="@color/primary_button"/>
     </LinearLayout>
 
 </RelativeLayout>
