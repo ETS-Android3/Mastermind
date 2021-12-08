@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds = 120000;   // 2 min
-    private Boolean timerRunning;
+    private Boolean timerRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,6 +226,26 @@ public class MainActivity extends AppCompatActivity
 
         createNumberButtons();
         resetGame();
+    }
+
+    // Reset game: get new secret number, clear past guesses, reset guesses used
+    private void resetGame() {
+        querySecretNumber();
+        numberOfGuessesUsed = 0;
+
+        updateGuessRemaining();
+        resetGuessBoxes();
+        pastGuesses.clear();
+        pastGuessAdapter.notifyDataSetChanged();
+
+        if (currentLevel == "challenge") {
+            timeLeftInMilliseconds = 120000;   // 2 min
+            startCountDownTimer();
+        }
+
+//        finish();
+//        startActivity(getIntent());
+//        overridePendingTransition(0,0);
     }
 
     // Create guess boxes
@@ -400,26 +420,6 @@ public class MainActivity extends AppCompatActivity
             guessBox.setText("?");
         }
         currentGuessPosition = 0;
-    }
-
-    // Reset game: get new secret number, clear past guesses, reset guesses used
-    private void resetGame() {
-        querySecretNumber();
-        numberOfGuessesUsed = 0;
-
-        updateGuessRemaining();
-        resetGuessBoxes();
-        pastGuesses.clear();
-        pastGuessAdapter.notifyDataSetChanged();
-
-        if (currentLevel == "challenge") {
-            timeLeftInMilliseconds = 120000;   // 2 min
-            startCountDownTimer();
-        }
-
-//        finish();
-//        startActivity(getIntent());
-//        overridePendingTransition(0,0);
     }
 
     // Open win dialog when user wins
