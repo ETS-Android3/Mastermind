@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,9 +43,11 @@ public class MainActivity extends AppCompatActivity
     private LinearLayout llContainerNumbers1;
     private LinearLayout llContainerNumbers2;
     private TextView tvGuessRemaining;
+    private TextView tvCountDownTimer;
     private Button btnResetGuess;
     private Button btnSubmitGuess;
 
+    private String currentLevel;
     private String[] secretNumber;
     private int[] frequencyOfSecretNumbers;
     private int secretNumberLength;
@@ -58,6 +61,10 @@ public class MainActivity extends AppCompatActivity
     private int currentGuessPosition = 0;
     private ArrayList<PastGuess> pastGuesses;
 
+    private CountDownTimer countDownTimer;
+    private long timeLeftInMilliseconds = 120000;   // 2 min
+    private Boolean timerRunning;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,18 +73,20 @@ public class MainActivity extends AppCompatActivity
         // Hide status bar
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        // Set containers
         llContainerGuessBoxes = findViewById(R.id.llContainerGuessBoxes);
         llContainerNumbers1 = findViewById(R.id.llContainerNumbers1);
         llContainerNumbers2 = findViewById(R.id.llContainerNumbers2);
         rvPastGuesses = findViewById(R.id.rvPastGuesses);
 
+        // Set guess remaining, timer, reset, and submit  button
         tvGuessRemaining = findViewById(R.id.tvGuessRemaining);
+        tvCountDownTimer = findViewById(R.id.tvCountDownTimer);
         btnResetGuess = findViewById(R.id.btnResetGuess);
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
 
         // Set default game mode
         secretNumberLength = 4;
-        levelNormal();
         guessAllotted = 10;
         numberOfGuessesUsed = 0;
 
@@ -88,6 +97,9 @@ public class MainActivity extends AppCompatActivity
         rvPastGuesses.setLayoutManager(new LinearLayoutManager(this));
 
         // Set and start game
+        currentLevel = "normal";
+        numberMin = 0;
+        numberMax = 7;
         createGuessBoxes();
         createNumberButtons();
         updateGuessRemaining();
@@ -116,43 +128,47 @@ public class MainActivity extends AppCompatActivity
 
     // Get random secret number from Integer Generator API
     private void querySecretNumber() {
-        secretNumber = ("1 2").split("\n");
+        secretNumber = ("1\n2\n3\n4").split("\n");
+        frequencyOfSecretNumbers = new int[numberMax + 1];
+        for (String number : secretNumber) {
+            frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
+        }
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-        params.put("num", secretNumberLength);
-        params.put("min", numberMin);
-        params.put("max", numberMax);
-        params.put("col", 1);               // Return response arranged by 1 column per line
-        params.put("base", 10);             // Use base 10 number system
-        params.put("format", "plain");      // Get return response in plain text
-        params.put("rnd", "new");           // Generate new random number
-
-        client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, String response) {
-                Log.d(TAG, "Integer Generator API request success!");
-
-                // Store secret number's number value and index location
-                secretNumber = response.split("\n");
-                Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
-
-                // Store secret number's number value
-                frequencyOfSecretNumbers = new int[numberMax + 1];
-                for (String number : secretNumber) {
-                    frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
-                }
-                Log.i(TAG, "Numbers in secret number: "
-                        + Arrays.toString(frequencyOfSecretNumbers));
-            }
-
-            @Override
-            public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
-                                  @Nullable Throwable throwable) {
-                Log.d(TAG, "Integer Generator API request failure.");
-                // !! Pop up window to notify error and generate new number
-            }
-        });
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        RequestParams params = new RequestParams();
+//        params.put("num", secretNumberLength);
+//        params.put("min", numberMin);
+//        params.put("max", numberMax);
+//        params.put("col", 1);               // Return response arranged by 1 column per line
+//        params.put("base", 10);             // Use base 10 number system
+//        params.put("format", "plain");      // Get return response in plain text
+//        params.put("rnd", "new");           // Generate new random number
+//
+//        client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Headers headers, String response) {
+//                Log.d(TAG, "Integer Generator API request success!");
+//
+//                // Store secret number's number value and index location
+//                secretNumber = response.split("\n");
+//                Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
+//
+//                // Store secret number's number value
+//                frequencyOfSecretNumbers = new int[numberMax + 1];
+//                for (String number : secretNumber) {
+//                    frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
+//                }
+//                Log.i(TAG, "Numbers in secret number: "
+//                        + Arrays.toString(frequencyOfSecretNumbers));
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
+//                                  @Nullable Throwable throwable) {
+//                Log.d(TAG, "Integer Generator API request failure.");
+//                // !! Pop up window to notify error and generate new number
+//            }
+//        });
     }
 
     // Create pop up menu for levels: easy, normal, challenge
@@ -166,41 +182,50 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
+
             case R.id.easy:
-                levelEasy();
-                updateLevel();
+                currentLevel = "easy";
+                updateLevel(currentLevel);
+                hideCountDownTimer();
                 return true;
+
             case R.id.normal:
-                levelNormal();
-                updateLevel();
+                currentLevel = "normal";
+                updateLevel(currentLevel);
+                hideCountDownTimer();
                 return true;
+
             case R.id.challenge:
-                levelChallenge();
-                updateLevel();
+                currentLevel = "challenge";
+                tvCountDownTimer.setVisibility(View.VISIBLE);
+                updateLevel(currentLevel);
                 return true;
+
             default:
                 return false;
         }
     }
 
-    private void updateLevel() {
+
+
+    private void updateLevel(String currentLevel) {
+        switch (currentLevel) {
+             case "easy":
+                numberMin = 0;
+                numberMax = 5;
+                break;
+            case "normal":
+                numberMin = 0;
+                numberMax = 7;
+                break;
+            case "challenge":
+                numberMin = 0;
+                numberMax = 9;
+                break;
+        }
+
         createNumberButtons();
         resetGame();
-    }
-
-    private void levelEasy() {
-        numberMin = 0;
-        numberMax = 5;
-    }
-
-    private void levelNormal() {
-        numberMin = 0;
-        numberMax = 7;
-    }
-
-    private void levelChallenge() {
-        numberMin = 0;
-        numberMax = 9;
     }
 
     // Create guess boxes
@@ -387,6 +412,11 @@ public class MainActivity extends AppCompatActivity
         pastGuesses.clear();
         pastGuessAdapter.notifyDataSetChanged();
 
+        if (currentLevel == "challenge") {
+            timeLeftInMilliseconds = 120000;   // 2 min
+            startCountDownTimer();
+        }
+
 //        finish();
 //        startActivity(getIntent());
 //        overridePendingTransition(0,0);
@@ -394,12 +424,22 @@ public class MainActivity extends AppCompatActivity
 
     // Open win dialog when user wins
     private void gameWon() {
+
+        if (currentLevel == "challenge") {
+            stopCountDownTimer();
+        }
+
         gameWon = true;
         openGameEndDialog();
     }
 
     // Open lose dialog when user wins
     private void gameOver() {
+
+        if (currentLevel == "challenge") {
+            stopCountDownTimer();
+        }
+
         gameWon = false;
         openGameEndDialog();
     }
@@ -415,4 +455,51 @@ public class MainActivity extends AppCompatActivity
     public void onTryAgainClicked() {
         resetGame();
     }
+
+    // Start countdown timer
+    private void startCountDownTimer() {
+        countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 1000) {
+            @Override
+            public void onTick(long l) {
+                timeLeftInMilliseconds = l;
+                updateCountDownTimer();
+            }
+
+            @Override
+            public void onFinish() {
+                gameOver();
+            }
+        }.start();
+
+        timerRunning = true;
+    }
+
+    // Update seconds left in timer
+    private void updateCountDownTimer() {
+        int minutes = (int) timeLeftInMilliseconds / 60000;         // 60000 milliseconds per second
+        int seconds = (int) timeLeftInMilliseconds % 60000 / 1000;
+
+        // Build timer, ex. 2:08
+        String timeLeft = minutes + ":" ;
+        if (seconds < 10) {
+            timeLeft += "0";
+        }
+        timeLeft += seconds;
+        Log.i(TAG, timeLeft);
+
+        tvCountDownTimer.setText(timeLeft);
+    }
+
+    private void stopCountDownTimer() {
+        countDownTimer.cancel();
+        timerRunning = false;
+    }
+
+    private void hideCountDownTimer() {
+        if (timerRunning) {
+            stopCountDownTimer();
+            tvCountDownTimer.setVisibility(View.GONE);
+        }
+    }
+
 }
