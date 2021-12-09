@@ -142,47 +142,47 @@ public class MainActivity extends AppCompatActivity
 
     // Get random secret number from Integer Generator API
     private void querySecretNumber() {
-        secretNumber = ("1\n2\n3\n4").split("\n");
-        frequencyOfSecretNumbers = new int[numberMax + 1];
-        for (String number : secretNumber) {
-            frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
-        }
+//        secretNumber = ("1\n2\n3\n4").split("\n");
+//        frequencyOfSecretNumbers = new int[numberMax + 1];
+//        for (String number : secretNumber) {
+//            frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
+//        }
 
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        RequestParams params = new RequestParams();
-//        params.put("num", secretNumberLength);
-//        params.put("min", numberMin);
-//        params.put("max", numberMax);
-//        params.put("col", 1);               // Return response arranged by 1 column per line
-//        params.put("base", 10);             // Use base 10 number system
-//        params.put("format", "plain");      // Get return response in plain text
-//        params.put("rnd", "new");           // Generate new random number
-//
-//        client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Headers headers, String response) {
-//                Log.d(TAG, "Integer Generator API request success!");
-//
-//                // Store secret number's number value and index location
-//                secretNumber = response.split("\n");
-//                Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
-//
-//                // Store secret number's number value
-//                frequencyOfSecretNumbers = new int[numberMax + 1];
-//                for (String number : secretNumber) {
-//                    frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
-//                }
-//                Log.i(TAG, "Numbers in secret number: "
-//                        + Arrays.toString(frequencyOfSecretNumbers));
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
-//                                  @Nullable Throwable throwable) {
-//                Log.d(TAG, "Integer Generator API request failure.");
-//                // !! Pop up window to notify error and generate new number
-//            }
-//        });
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("num", secretNumberLength);
+        params.put("min", numberMin);
+        params.put("max", numberMax);
+        params.put("col", 1);               // Return response arranged by 1 column per line
+        params.put("base", 10);             // Use base 10 number system
+        params.put("format", "plain");      // Get return response in plain text
+        params.put("rnd", "new");           // Generate new random number
+
+        client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, String response) {
+                Log.d(TAG, "Integer Generator API request success!");
+
+                // Store secret number's number value and index location
+                secretNumber = response.split("\n");
+                Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
+
+                // Store secret number's number value
+                frequencyOfSecretNumbers = new int[numberMax + 1];
+                for (String number : secretNumber) {
+                    frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
+                }
+                Log.i(TAG, "Numbers in secret number: "
+                        + Arrays.toString(frequencyOfSecretNumbers));
+            }
+
+            @Override
+            public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
+                                  @Nullable Throwable throwable) {
+                Log.d(TAG, "Integer Generator API request failure.");
+                // !! Pop up window to notify error and generate new number
+            }
+        });
     }
 
     // Create pop up menu for levels: easy, normal, challenge
