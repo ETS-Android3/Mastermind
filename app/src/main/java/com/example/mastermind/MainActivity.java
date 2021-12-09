@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<PastGuess> pastGuesses;
 
     private TextView listGuessBoxes[];
-    private int currentGuessPosition = 0;
+    private int currentGuessBoxPosition = 0;
 
     private String currentLevel;
     private String[] secretNumber;
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -90,57 +91,37 @@ public class MainActivity extends AppCompatActivity
         btnResetGuess = findViewById(R.id.btnResetGuess);
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
 
-        // Set background music
-        bgmDefault = R.raw.bgm_default;
-        bgmChallenge = R.raw.bgm_challenge;
-
         // Set up recycler view for past guesses
         pastGuesses = new ArrayList<>();
         pastGuessAdapter = new PastGuessAdapter(this, pastGuesses);
         rvPastGuesses.setAdapter(pastGuessAdapter);
         rvPastGuesses.setLayoutManager(new LinearLayoutManager(this));
 
-        // Set default game mode
+        // Set default normal mode and start game
         secretNumberLength = 4;
         guessAllotted = 10;
         numberOfGuessesUsed = 0;
 
-        // Set and start game
         currentLevel = "normal";
         numberMin = 0;
         numberMax = 7;
         querySecretNumber();
         createGuessBoxes();
         createNumberButtons();
+        createSubmitAndResetButtons();
         updateGuessRemaining();
 
-        // Set bgm
+        bgmDefault = R.raw.bgm_default;
+        bgmChallenge = R.raw.bgm_challenge;
         currentBgm = bgmDefault;
         startBackgroundMusic();
-
-        // Set click listener for submit and reset buttons
-        btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validGuess()) {
-                    submitGuess();
-                }
-                else {
-                    Toast.makeText(MainActivity.this,
-                            "Choose a number for each position", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        btnResetGuess.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                resetGuessBoxes();
-            }
-        });
     }
 
-    // Get random secret number from Integer Generator API
+    /**
+     * Get random secret number from Integer Generator API. Stores each number value as string into
+     * array. Also stores frequency of each number value into that value's index in an array. For
+     * example, a secret number of "1 2 3 1" would have a freqyency array of [0, 2, 1, 1].
+     */
     private void querySecretNumber() {
 //        secretNumber = ("1\n2\n3\n4").split("\n");
 //        frequencyOfSecretNumbers = new int[numberMax + 1];
@@ -163,11 +144,9 @@ public class MainActivity extends AppCompatActivity
             public void onSuccess(int statusCode, Headers headers, String response) {
                 Log.d(TAG, "Integer Generator API request success!");
 
-                // Store secret number's number value and index location
                 secretNumber = response.split("\n");
                 Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
 
-                // Store secret number's number value
                 frequencyOfSecretNumbers = new int[numberMax + 1];
                 for (String number : secretNumber) {
                     frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
@@ -180,19 +159,29 @@ public class MainActivity extends AppCompatActivity
             public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
                                   @Nullable Throwable throwable) {
                 Log.d(TAG, "Integer Generator API request failure.");
-                // !! Pop up window to notify error and generate new number
             }
         });
     }
 
-    // Create pop up menu for levels: easy, normal, challenge
+    /**
+     * Create popup menu for levels: easy, normal, challenge.
+     * @param   view    view for popup menu
+     */
     public void showPopupLevels(View view) {
+
         PopupMenu popup = new PopupMenu(this, view);
         popup.setOnMenuItemClickListener(this);
         popup.inflate(R.menu.popup_menu_levels);
         popup.show();
     }
 
+    /**
+     * Update current level when specified level is clicked. Call update level function to
+     * update level.
+     *
+     * @param   menuItem    menu item with level options
+     * @return  boolean     if menu item clicked, return true
+     */
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -200,28 +189,29 @@ public class MainActivity extends AppCompatActivity
             case R.id.easy:
                 currentLevel = "easy";
                 updateLevel(currentLevel);
-                hideCountDownTimer();
                 return true;
-
             case R.id.normal:
                 currentLevel = "normal";
                 updateLevel(currentLevel);
-                hideCountDownTimer();
                 return true;
-
             case R.id.challenge:
                 currentLevel = "challenge";
-                tvCountDownTimer.setVisibility(View.VISIBLE);
                 updateLevel(currentLevel);
                 return true;
-
             default:
                 return false;
         }
     }
 
+    /**
+     * Update game based on specified level's settings. Update mininum and maximum integers
+     * possible for secret code (ex. digits 0-7) and update background music for specified level.
+     * Call create number buttons and reset game functions to set up game with specified level's
+     * settings.
+     *
+     * @param currentLevel  current level mode
+     */
     private void updateLevel(String currentLevel) {
-        stopBackgroundMusic();
 
         switch (currentLevel) {
              case "easy":
@@ -245,39 +235,40 @@ public class MainActivity extends AppCompatActivity
         resetGame();
     }
 
-    // Reset game: get new secret number, clear past guesses, reset guesses used
+    /**
+     * Reset game by querying for new secret number, resetting guess used count,
+     * remove past guesses, and resets background music for current level and timer, if applicable,
+     * for current level. If challenge level, set up timer.
+     */
     private void resetGame() {
-        querySecretNumber();
 
+        querySecretNumber();
         numberOfGuessesUsed = 0;
         updateGuessRemaining();
-
         resetGuessBoxes();
 
         pastGuesses.clear();
         pastGuessAdapter.notifyDataSetChanged();
 
         if (currentLevel == "challenge") {
-            timeLeftInMilliseconds = 120000;   // 2 min
+            tvCountDownTimer.setVisibility(View.VISIBLE);
+            timeLeftInMilliseconds = 120000;                // 2 min
             startCountDownTimer();
-
-            // Restart music
-            stopBackgroundMusic();
         }
-
+        else {
+            hideCountDownTimer();
+        }
+        stopBackgroundMusic();
         startBackgroundMusic();
-
-//        finish();
-//        startActivity(getIntent());
-//        overridePendingTransition(0,0);
     }
 
-    // Create guess boxes
+    /**
+     * Create text view guess boxes to display user's current guess.
+     */
     private void createGuessBoxes() {
 
         listGuessBoxes = new TextView[secretNumberLength];
 
-        // Set guess box params
         for (int i = 0; i < secretNumberLength; ++i) {
             final TextView textView = new TextView(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(150, 150);
@@ -289,33 +280,40 @@ public class MainActivity extends AppCompatActivity
             textView.setBackground(getResources().getDrawable(R.drawable.background_guess_box));
             textView.setId(i);
             textView.setText("?");
-            Log.i(TAG, "Guess box id: " + textView.getId() + ", Button text: " + textView.getText());
+            Log.i(TAG, "Guess box id: " + textView.getId()
+                    + ", Button text: " + textView.getText());
 
-            // Add new guess box to listGuessBoxes and guess box container
             listGuessBoxes[i] = textView;
             llContainerGuessBoxes.addView(textView);
         }
     }
 
-    // Create button for each possible number
+    /**
+     * Create button for possible number values in secret number.
+     */
     private void createNumberButtons() {
 
-        // Remove buttons, if exists
         llContainerNumbers1.removeAllViews();
         llContainerNumbers2.removeAllViews();
 
-        // Create number buttons in containers
         createNumberButtonsInContainer(
                 llContainerNumbers1, numberMin, numberMax / 2);
         createNumberButtonsInContainer(
                 llContainerNumbers2, (numberMax / 2) + 1, numberMax);
     }
 
-    // Create number buttons for each container
+    /**
+     * Create buttons for range of number values and insert in a container. When buttons are
+     * clicked, guess box is updated with the number value clicked. If button is clicked after
+     * length of secret number is reached, a toast pops up notifying user to enter or reset guess.
+     *
+     * @param llContainerNumbers    container to generate number buttons in
+     * @param numberStart           starting value for number buttons generated
+     * @param numberEnd             last value for number buttons generated
+     */
     private void createNumberButtonsInContainer(
             LinearLayout llContainerNumbers, int numberStart, int numberEnd) {
 
-        // Set button params
         for (int i = numberStart; i <= numberEnd; ++i) {
             final Button button = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(150, 150);
@@ -327,15 +325,13 @@ public class MainActivity extends AppCompatActivity
             button.setId(i);
             button.setText(Integer.toString(i));
             Log.i(TAG, "Button id: " + button.getId() + ", Button text: " + button.getText());
-
-            // Update current guess box with number clicked
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (currentGuessPosition < secretNumberLength) {
-                        TextView currentGuessBox = listGuessBoxes[currentGuessPosition];
+                    if (currentGuessBoxPosition < secretNumberLength) {
+                        TextView currentGuessBox = listGuessBoxes[currentGuessBoxPosition];
                         currentGuessBox.setText(button.getText());
-                        ++currentGuessPosition;
+                        ++currentGuessBoxPosition;
                     }
                     else {
                         Toast.makeText(MainActivity.this, "Enter or reset guess",
@@ -348,7 +344,39 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // Check if each position in guess is filled
+    /**
+     * Create submit and reset buttons. If submit button is clicked without invalid guess, a toast
+     * will notify user to choose a number for each guess position.
+     */
+    private void createSubmitAndResetButtons() {
+
+        btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validGuess()) {
+                    submitGuess();
+                }
+                else {
+                    Toast.makeText(MainActivity.this,
+                            "Choose a number for each position", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnResetGuess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                resetGuessBoxes();
+            }
+        });
+    }
+
+    /**
+     * Check if guess is valid by checking length of user guess with length of secret number length.
+     *
+     * @return  true    if guess and secret number length match
+     *          false   otherwise
+     */
     private Boolean validGuess() {
 
         for (int i = 0; i < secretNumberLength; ++i) {
@@ -356,14 +384,18 @@ public class MainActivity extends AppCompatActivity
                 return false;
             }
         }
-
         return true;
     }
 
-    // Submit valid guess
+    /**
+     * Check if user guess matches secret code, adds guess to past guesses array list, and updates
+     * remaining guesses. If guess is correct, call game won function. If not, record whether each
+     * digit has a location or value match into match guess string array list. Add "2" to match
+     * guess array for each location match, and add 1 for each value match. Update remaining
+     * guesses. If guesses remain, reset guess box. If not, call game over function.
+     */
     private void submitGuess() {
 
-        // Add each value from guess box into guess
         String[] guess = new String[secretNumberLength];
         for (int i = 0; i < secretNumberLength; ++i) {
             guess[i] = listGuessBoxes[i].getText().toString();
@@ -378,20 +410,11 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        // If guess matches secret number, user wins
         if (matchSecretNumber) {
-            Log.i(TAG, "Game won!");
             gameWon();
+            Log.i(TAG, "Game won!");
         }
-        // If guess does not match secret number, check location and value matches
         else {
-            /*
-               Record location and value matches for guess
-                    1: value match
-                    2: location match
-
-               Index does not matter, there is no specific order
-            */
             ArrayList<Integer> matchedGuess = new ArrayList<>();
             ArrayList<String> guessCopy = new ArrayList<>();
 
@@ -401,10 +424,9 @@ public class MainActivity extends AppCompatActivity
 
             int[] frequencyOfSecretNumbersCopy =
                     Arrays.copyOf(frequencyOfSecretNumbers, numberMax + 1);
-
-            // Check and record location matches
             ArrayList<Integer> removeNumberInGuess = new ArrayList<Integer>(secretNumberLength);
 
+            // Check location matches
             for (int i = 0; i < secretNumberLength; ++i) {
                 if (guessCopy.get(i).equals(secretNumber[i])
                         && frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
@@ -418,7 +440,7 @@ public class MainActivity extends AppCompatActivity
                 guessCopy.remove(index);
             }
 
-            // Check and record value matches
+            // Check value matches
             int lengthOfGuessCopy = guessCopy.size();
 
             for (int i = 0; i < lengthOfGuessCopy; ++i) {
@@ -427,7 +449,6 @@ public class MainActivity extends AppCompatActivity
                     frequencyOfSecretNumbersCopy[Integer.parseInt(guessCopy.get(i))] -= 1;
                 }
             }
-
             Log.i(TAG, "Matched numbers: " + matchedGuess.toString());
 
             // Add new guess into PastGuesses
@@ -441,43 +462,49 @@ public class MainActivity extends AppCompatActivity
             guessUsed();
             updateGuessRemaining();
 
-            /*
-                If remaining guess exists, reset guess boxes
-                if not, game ends
-            */
             if (remainingGuessExists()) {
                 resetGuessBoxes();
             } else {
-                Log.i(TAG, "Game over!");
                 gameOver();
+                Log.i(TAG, "Game over!");
             }
         }
     }
 
-    // Returns true if remaining guess exists, otherwise false
-    private Boolean remainingGuessExists() {
-        return numberOfGuessesUsed < guessAllotted;
-    }
+    /**
+     * Checks if remaining guess exists
+     * @return  true    if remaining guess exists
+     *          false   otherwise
+     */
+    private Boolean remainingGuessExists() { return numberOfGuessesUsed < guessAllotted; }
 
-    // Increment guesses used
-    private void guessUsed() {
-        ++numberOfGuessesUsed;
-    }
+    /**
+     * Increment guesses used
+     */
+    private void guessUsed() { ++numberOfGuessesUsed; }
 
+    /**
+     * Update remaining guess in user interface
+     */
     private void updateGuessRemaining() {
+
         tvGuessRemaining.setText(Integer.toString(guessAllotted - numberOfGuessesUsed));
     }
 
-    // Reset all guess boxes and current guess position
+    /**
+     * Reset all guess boxes and current guess position for guess box
+     */
     private void resetGuessBoxes() {
 
         for (TextView guessBox : listGuessBoxes) {
             guessBox.setText("?");
         }
-        currentGuessPosition = 0;
+        currentGuessBoxPosition = 0;
     }
 
-    // Open win dialog when user wins
+    /**
+     * Open win dialog when user wins. For challenge level, calls stop countdown timer.
+     */
     private void gameWon() {
 
         if (currentLevel == "challenge") {
@@ -488,7 +515,9 @@ public class MainActivity extends AppCompatActivity
         openGameEndDialog();
     }
 
-    // Open lose dialog when user wins
+    /**
+     * Open lose dialog when user loses. For challenge level, calls stop countdown timer.
+     */
     private void gameOver() {
 
         if (currentLevel == "challenge") {
@@ -499,19 +528,29 @@ public class MainActivity extends AppCompatActivity
         openGameEndDialog();
     }
 
-    // Call game end dialog when user wins or loses
+    /**
+     * Call popup dialog notifying game end when user wins or loses
+     */
     private void openGameEndDialog() {
+
         GameEndDialog gameEndDialog = new GameEndDialog(gameWon);
         gameEndDialog.show(getSupportFragmentManager(), "GameEndDialogue");
     }
 
-    // Reset game when user clicks "Try Again" at game end
+    /**
+     * Reset game when user clicks "Try Again" button on game end dialog
+     */
     @Override
     public void onTryAgainClicked() {
+
         resetGame();
     }
 
+    /**
+     * Start countdown timer for challenge mode. When timer runs out, call game over.
+     */
     private void startCountDownTimer() {
+
         countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 1000) {
             @Override
             public void onTick(long l) {
@@ -528,11 +567,14 @@ public class MainActivity extends AppCompatActivity
         timerRunning = true;
     }
 
+    /**
+     * Update timer on user interface.
+     */
     private void updateCountDownTimer() {
+
         int minutes = (int) timeLeftInMilliseconds / 60000;         // 60000 milliseconds per second
         int seconds = (int) timeLeftInMilliseconds % 60000 / 1000;
 
-        // Build timer, ex. 1:08
         String timeLeft = minutes + ":" ;
         if (seconds < 10) {
             timeLeft += "0";
@@ -543,19 +585,31 @@ public class MainActivity extends AppCompatActivity
         tvCountDownTimer.setText(timeLeft);
     }
 
+    /**
+     * Stop count down timer.
+     */
     private void stopCountDownTimer() {
+
         countDownTimer.cancel();
         timerRunning = false;
     }
 
+    /**
+     * Stop and hide count down timer.
+     */
     private void hideCountDownTimer() {
+
         if (timerRunning) {
             stopCountDownTimer();
             tvCountDownTimer.setVisibility(View.INVISIBLE);
         }
     }
 
+    /**
+     * Play background music on loop.
+     */
     public void startBackgroundMusic() {
+
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(this, currentBgm);
         }
@@ -563,33 +617,53 @@ public class MainActivity extends AppCompatActivity
         mediaPlayer.setLooping(true);
     }
 
+    /**
+     * Pause background music.
+     */
     public void pauseBackgroundMusic() {
+
         if (mediaPlayer != null) {
             mediaPlayer.pause();
         }
     }
 
+    /**
+     * Stop and release background music.
+     */
     public void stopBackgroundMusic() {
+
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
     }
 
+    /**
+     * Start background music on resume.
+     */
     @Override
     protected void onResume() {
+
         super.onResume();
         startBackgroundMusic();
     }
 
+    /**
+     * Pause background music on pause.
+     */
     @Override
     protected void onPause() {
+
         super.onPause();
         pauseBackgroundMusic();
     }
 
+    /**
+     * Stop and release background music on stop.
+     */
     @Override
     protected void onStop() {
+
         super.onStop();
         stopBackgroundMusic();
     }
