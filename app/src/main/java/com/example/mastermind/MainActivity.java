@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -259,10 +260,10 @@ public class MainActivity extends AppCompatActivity
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(150, 150);
             params.setMargins(30, 0, 30, 0);
             textView.setLayoutParams(params);
-            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setGravity(Gravity.CENTER);
             textView.setTextSize(34);
             textView.setTextColor(getResources().getColor(R.color.text));
-            textView.setBackgroundColor(Color.TRANSPARENT);
+            textView.setBackground(getResources().getDrawable(R.drawable.background_guess_box));
             textView.setId(i);
             textView.setText("?");
             Log.i(TAG, "Guess box id: " + textView.getId() + ", Button text: " + textView.getText());
@@ -498,7 +499,7 @@ public class MainActivity extends AppCompatActivity
     private void hideCountDownTimer() {
         if (timerRunning) {
             stopCountDownTimer();
-            tvCountDownTimer.setVisibility(View.GONE);
+            tvCountDownTimer.setVisibility(View.INVISIBLE);
         }
     }
 

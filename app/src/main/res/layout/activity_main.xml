@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/text"
+            android:textColor="@color/text_secondary"
             android:textSize="40sp"
             tools:text="3:00" />
 
