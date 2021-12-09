@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -66,6 +67,11 @@ public class MainActivity extends AppCompatActivity
     private long timeLeftInMilliseconds = 120000;   // 2 min
     private Boolean timerRunning = false;
 
+    private MediaPlayer currentBgm;
+    private MediaPlayer bgmDefault;
+    private MediaPlayer bgmChallenge;
+    private Boolean bgmPlaying;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +89,10 @@ public class MainActivity extends AppCompatActivity
         tvCountDownTimer = findViewById(R.id.tvCountDownTimer);
         btnResetGuess = findViewById(R.id.btnResetGuess);
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
+
+        // Set background music
+        bgmDefault = MediaPlayer.create(this, R.raw.bgm_default);
+        bgmChallenge = MediaPlayer.create(this, R.raw.bgm_challenge);
 
         // Set up recycler view for past guesses
         pastGuesses = new ArrayList<>();
@@ -103,6 +113,11 @@ public class MainActivity extends AppCompatActivity
         createGuessBoxes();
         createNumberButtons();
         updateGuessRemaining();
+
+        // Set bgm
+        currentBgm = bgmDefault;
+        startBackgroundMusic();
+        bgmPlaying = true;
 
         // Set click listener for submit and reset buttons
         btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
@@ -207,23 +222,31 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateLevel(String currentLevel) {
+        if (bgmPlaying) {
+            stopBackgroundMusic();
+        }
+
         switch (currentLevel) {
              case "easy":
                 numberMin = 0;
                 numberMax = 5;
+                currentBgm = bgmDefault;
                 break;
             case "normal":
                 numberMin = 0;
                 numberMax = 7;
+                currentBgm = bgmDefault;
                 break;
             case "challenge":
                 numberMin = 0;
                 numberMax = 9;
+                currentBgm = bgmChallenge;
                 break;
         }
 
         createNumberButtons();
         resetGame();
+        startBackgroundMusic();
     }
 
     // Reset game: get new secret number, clear past guesses, reset guesses used
@@ -531,4 +554,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void startBackgroundMusic() {
+        currentBgm.start();
+    }
+
+    private void stopBackgroundMusic() {
+        currentBgm.stop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        currentBgm.release();
+    }
 }
