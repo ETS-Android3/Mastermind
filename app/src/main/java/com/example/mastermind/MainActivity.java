@@ -37,9 +37,6 @@ public class MainActivity extends AppCompatActivity
     public static final String INTEGER_GENERATOR_API = "https://www.random.org/integers";
     public static final String TAG = "MainActivity";
 
-    private RecyclerView rvPastGuesses;
-    protected PastGuessAdapter pastGuessAdapter;
-
     private LinearLayout llContainerGuessBoxes;
     private LinearLayout llContainerNumbers1;
     private LinearLayout llContainerNumbers2;
@@ -47,6 +44,13 @@ public class MainActivity extends AppCompatActivity
     private TextView tvCountDownTimer;
     private Button btnResetGuess;
     private Button btnSubmitGuess;
+
+    private RecyclerView rvPastGuesses;
+    protected PastGuessAdapter pastGuessAdapter;
+    private ArrayList<PastGuess> pastGuesses;
+
+    private TextView listGuessBoxes[];
+    private int currentGuessPosition = 0;
 
     private String currentLevel;
     private String[] secretNumber;
@@ -57,10 +61,6 @@ public class MainActivity extends AppCompatActivity
     private int guessAllotted;
     private int numberOfGuessesUsed;
     private Boolean gameWon;
-
-    private TextView listGuessBoxes[];
-    private int currentGuessPosition = 0;
-    private ArrayList<PastGuess> pastGuesses;
 
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds = 120000;   // 2 min
@@ -74,22 +74,15 @@ public class MainActivity extends AppCompatActivity
         // Hide status bar
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        // Set containers
         llContainerGuessBoxes = findViewById(R.id.llContainerGuessBoxes);
         llContainerNumbers1 = findViewById(R.id.llContainerNumbers1);
         llContainerNumbers2 = findViewById(R.id.llContainerNumbers2);
         rvPastGuesses = findViewById(R.id.rvPastGuesses);
 
-        // Set guess remaining, timer, reset, and submit  button
         tvGuessRemaining = findViewById(R.id.tvGuessRemaining);
         tvCountDownTimer = findViewById(R.id.tvCountDownTimer);
         btnResetGuess = findViewById(R.id.btnResetGuess);
         btnSubmitGuess = findViewById(R.id.btnSubmitGuess);
-
-        // Set default game mode
-        secretNumberLength = 4;
-        guessAllotted = 10;
-        numberOfGuessesUsed = 0;
 
         // Set up recycler view for past guesses
         pastGuesses = new ArrayList<>();
@@ -97,15 +90,21 @@ public class MainActivity extends AppCompatActivity
         rvPastGuesses.setAdapter(pastGuessAdapter);
         rvPastGuesses.setLayoutManager(new LinearLayoutManager(this));
 
+        // Set default game mode
+        secretNumberLength = 4;
+        guessAllotted = 10;
+        numberOfGuessesUsed = 0;
+
         // Set and start game
         currentLevel = "normal";
         numberMin = 0;
         numberMax = 7;
+        querySecretNumber();
         createGuessBoxes();
         createNumberButtons();
         updateGuessRemaining();
-        querySecretNumber();
 
+        // Set click listener for submit and reset buttons
         btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,47 +128,47 @@ public class MainActivity extends AppCompatActivity
 
     // Get random secret number from Integer Generator API
     private void querySecretNumber() {
-        secretNumber = ("1\n2\n3\n4").split("\n");
-        frequencyOfSecretNumbers = new int[numberMax + 1];
-        for (String number : secretNumber) {
-            frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
-        }
+//        secretNumber = ("0\n2\n3\n1").split("\n");
+//        frequencyOfSecretNumbers = new int[numberMax + 1];
+//        for (String number : secretNumber) {
+//            frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
+//        }
 
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        RequestParams params = new RequestParams();
-//        params.put("num", secretNumberLength);
-//        params.put("min", numberMin);
-//        params.put("max", numberMax);
-//        params.put("col", 1);               // Return response arranged by 1 column per line
-//        params.put("base", 10);             // Use base 10 number system
-//        params.put("format", "plain");      // Get return response in plain text
-//        params.put("rnd", "new");           // Generate new random number
-//
-//        client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Headers headers, String response) {
-//                Log.d(TAG, "Integer Generator API request success!");
-//
-//                // Store secret number's number value and index location
-//                secretNumber = response.split("\n");
-//                Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
-//
-//                // Store secret number's number value
-//                frequencyOfSecretNumbers = new int[numberMax + 1];
-//                for (String number : secretNumber) {
-//                    frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
-//                }
-//                Log.i(TAG, "Numbers in secret number: "
-//                        + Arrays.toString(frequencyOfSecretNumbers));
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
-//                                  @Nullable Throwable throwable) {
-//                Log.d(TAG, "Integer Generator API request failure.");
-//                // !! Pop up window to notify error and generate new number
-//            }
-//        });
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("num", secretNumberLength);
+        params.put("min", numberMin);
+        params.put("max", numberMax);
+        params.put("col", 1);               // Return response arranged by 1 column per line
+        params.put("base", 10);             // Use base 10 number system
+        params.put("format", "plain");      // Get return response in plain text
+        params.put("rnd", "new");           // Generate new random number
+
+        client.get(INTEGER_GENERATOR_API, params, new TextHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, String response) {
+                Log.d(TAG, "Integer Generator API request success!");
+
+                // Store secret number's number value and index location
+                secretNumber = response.split("\n");
+                Log.i(TAG, "Secret number: " + Arrays.toString(secretNumber));
+
+                // Store secret number's number value
+                frequencyOfSecretNumbers = new int[numberMax + 1];
+                for (String number : secretNumber) {
+                    frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
+                }
+                Log.i(TAG, "Numbers in secret number: "
+                        + Arrays.toString(frequencyOfSecretNumbers));
+            }
+
+            @Override
+            public void onFailure(int statusCode, @Nullable Headers headers, String errorResponse,
+                                  @Nullable Throwable throwable) {
+                Log.d(TAG, "Integer Generator API request failure.");
+                // !! Pop up window to notify error and generate new number
+            }
+        });
     }
 
     // Create pop up menu for levels: easy, normal, challenge
@@ -207,8 +206,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
     private void updateLevel(String currentLevel) {
         switch (currentLevel) {
              case "easy":
@@ -232,10 +229,12 @@ public class MainActivity extends AppCompatActivity
     // Reset game: get new secret number, clear past guesses, reset guesses used
     private void resetGame() {
         querySecretNumber();
-        numberOfGuessesUsed = 0;
 
+        numberOfGuessesUsed = 0;
         updateGuessRemaining();
+
         resetGuessBoxes();
+
         pastGuesses.clear();
         pastGuessAdapter.notifyDataSetChanged();
 
@@ -288,7 +287,7 @@ public class MainActivity extends AppCompatActivity
                 llContainerNumbers2, (numberMax / 2) + 1, numberMax);
     }
 
-    // Create number buttons in container
+    // Create number buttons for each container
     private void createNumberButtonsInContainer(
             LinearLayout llContainerNumbers, int numberStart, int numberEnd) {
 
@@ -325,7 +324,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // Check if every position in guess has valid number
+    // Check if each position in guess is filled
     private Boolean validGuess() {
 
         for (int i = 0; i < secretNumberLength; ++i) {
@@ -355,31 +354,56 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        // If guess matches secret number, user wins
         if (matchSecretNumber) {
             Log.i(TAG, "Game won!");
             gameWon();
         }
+        // If guess does not match secret number, check location and value matches
         else {
-            /* Record how many value OR value and location
-               matches exist between guess and secret number
-                    1: value match in secret code
-                    2: value and location match in secret code
+            /*
+               Record location and value matches for guess
+                    1: value match
+                    2: location match
+
                Index does not matter, there is no specific order
             */
             ArrayList<Integer> matchedGuess = new ArrayList<>();
+            ArrayList<String> guessCopy = new ArrayList<>();
+
+            for (String number : guess) {
+                guessCopy.add(number);
+            }
+
             int[] frequencyOfSecretNumbersCopy =
                     Arrays.copyOf(frequencyOfSecretNumbers, numberMax + 1);
 
+            // Check and record location matches
+            ArrayList<Integer> removeNumberInGuess = new ArrayList<Integer>(secretNumberLength);
+
             for (int i = 0; i < secretNumberLength; ++i) {
-                if (guess[i].equals(secretNumber[i])
+                if (guessCopy.get(i).equals(secretNumber[i])
                         && frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
                     matchedGuess.add(2);
-                    frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
-                } else if (frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
-                    matchedGuess.add(1);
+                    removeNumberInGuess.add(i);
                     frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
                 }
             }
+
+            for (int index : removeNumberInGuess) {
+                guessCopy.remove(index);
+            }
+
+            // Check and record value matches
+            int lengthOfGuessCopy = guessCopy.size();
+
+            for (int i = 0; i < lengthOfGuessCopy; ++i) {
+                if (frequencyOfSecretNumbersCopy[Integer.parseInt(guessCopy.get(i))] > 0) {
+                    matchedGuess.add(1);
+                    frequencyOfSecretNumbersCopy[Integer.parseInt(guessCopy.get(i))] -= 1;
+                }
+            }
+
             Log.i(TAG, "Matched numbers: " + matchedGuess.toString());
 
             // Add new guess into PastGuesses
@@ -389,9 +413,14 @@ public class MainActivity extends AppCompatActivity
             Log.i(TAG, "Guess added to pastGuesses: "
                     + Arrays.toString(pastGuesses.get(positionAdded).getGuess()));
 
+            // Update guesses used
             guessUsed();
             updateGuessRemaining();
 
+            /*
+                If remaining guess exists, reset guess boxes
+                if not, game ends
+            */
             if (remainingGuessExists()) {
                 resetGuessBoxes();
             } else {
@@ -401,11 +430,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // Returns true if remaining guess exists, otherwise false
     private Boolean remainingGuessExists() {
         return numberOfGuessesUsed < guessAllotted;
     }
 
-    // Increment guesses used !! add guesses left
+    // Increment guesses used
     private void guessUsed() {
         ++numberOfGuessesUsed;
     }
@@ -457,7 +487,6 @@ public class MainActivity extends AppCompatActivity
         resetGame();
     }
 
-    // Start countdown timer
     private void startCountDownTimer() {
         countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 1000) {
             @Override
@@ -475,12 +504,11 @@ public class MainActivity extends AppCompatActivity
         timerRunning = true;
     }
 
-    // Update seconds left in timer
     private void updateCountDownTimer() {
         int minutes = (int) timeLeftInMilliseconds / 60000;         // 60000 milliseconds per second
         int seconds = (int) timeLeftInMilliseconds % 60000 / 1000;
 
-        // Build timer, ex. 2:08
+        // Build timer, ex. 1:08
         String timeLeft = minutes + ":" ;
         if (seconds < 10) {
             timeLeft += "0";
