@@ -4,7 +4,7 @@
 1. [Overview](#Overview)
 2. [Development](#Development)
 3. [Running Mastermind](#Run)
-4. [How to Play](#Play)
+4. [Playing Mastermind](#Play)
 
 ## Overview <a name="Overview"></a>
 ### Description
@@ -43,8 +43,7 @@ An Android mobile application based on the code breaking board game Mastermind.
 #### Future Implementations
 * Menu screen with option to start game or view rules
 * Rules screen explaining rules of the game and user interface guide
-* Create extra large layout for tablet portrait and landscape mode
-* Test with iOS
+* Continue testing user interface with various devices (ex. tablet, iOS devices)
 
 ## Running Mastermind <a name="Run"></a>
 ### How to Run Code
@@ -54,13 +53,14 @@ An Android mobile application based on the code breaking board game Mastermind.
 * Create virtual mobile device (ex. Pixel 3a API 30)
 * Run and install application on virtual device 
 
-### How to Run App on Mobile Device
+### How to Run on Mobile Device
 * Download Mastermind.apk on mobile device: 
   <br>https://drive.google.com/file/d/1oxS7ogRBJMdFFZulqrvkCfko0vlO4KSY/view?usp=sharing
 * Locate Mastermind.apk (in downloads or where downloads are stored)
 * Install Mastermind.apk 
 
-## How to Play <a name="Play"></a>
+## Playing Mastermind <a name="Play"></a>
+### How to Play
 * Objective: *crack the secret code and escape the cursed mansion*
 * Make sure device has sound on
 * Open Mastermind application
