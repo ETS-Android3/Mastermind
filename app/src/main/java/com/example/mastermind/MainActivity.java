@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity
     private int currentBgm;
     private int bgmDefault;
     private int bgmChallenge;
-    private Boolean bgmPlaying;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +117,6 @@ public class MainActivity extends AppCompatActivity
         // Set bgm
         currentBgm = bgmDefault;
         startBackgroundMusic();
-        bgmPlaying = true;
 
         // Set click listener for submit and reset buttons
         btnSubmitGuess.setOnClickListener(new View.OnClickListener() {
@@ -239,8 +237,6 @@ public class MainActivity extends AppCompatActivity
             case "challenge":
                 numberMin = 0;
                 numberMax = 9;
-                stopBackgroundMusic();
-                bgmPlaying = false;
                 currentBgm = bgmChallenge;
                 break;
         }
@@ -562,14 +558,9 @@ public class MainActivity extends AppCompatActivity
     public void startBackgroundMusic() {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(this, currentBgm);
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    startBackgroundMusic();
-                }
-            });
         }
         mediaPlayer.start();
+        mediaPlayer.setLooping(true);
     }
 
     public void pauseBackgroundMusic() {
@@ -583,6 +574,12 @@ public class MainActivity extends AppCompatActivity
             mediaPlayer.release();
             mediaPlayer = null;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startBackgroundMusic();
     }
 
     @Override
