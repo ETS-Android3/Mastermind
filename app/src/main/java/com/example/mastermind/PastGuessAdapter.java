@@ -95,7 +95,7 @@ public class PastGuessAdapter extends RecyclerView.Adapter<PastGuessAdapter.View
 
             int valueAndLocationMatches = Collections.frequency(pastGuess.getMatchedGuess(), 2);
             for (int i = 0; i < valueAndLocationMatches; ++i) {
-                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_match_hint_value_location);
+                matchedGuessHints[guessHintPosition].setImageResource(R.drawable.ic_match_hint_location);
                 ++guessHintPosition;
             }
 
