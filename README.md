@@ -61,7 +61,7 @@ I also explored development concepts I was unfamiliar with, such as creating a p
 <img src="wireframe.jpg" width=400>
 
 ### Planning & Building
-While keeping the deadline in mind, I analyzed which features would impact users the most. The most impactful features became a priority to implement. Next, I broke down the features into smaller goals. To meet all the goal, I organized and scheduled achievable goals for each day until the deadline. I also planned to finish 1-2 days early to accommodate for delays during development.
+While keeping the deadline in mind, I analyzed which features would impact users the most. The most impactful features became a priority to implement. Next, I broke down the features into smaller goals. To meet all the goals, I organized and scheduled achievable goals for each day until the deadline. I also planned to finish 1-2 days early to accommodate for delays during development.
 
    | Day  | To-Do                                                  |
    | ---- | ------------------------------------------------------ |
@@ -103,7 +103,7 @@ While building, I developed small scale implementations of each feature while ke
 
 ### How to Run on Mobile Device
 * Download Mastermind.apk on mobile device: 
-  <br>https://drive.google.com/file/d/1K6egw16A6em9QQliQ59uibioEdSEtuYF/view?usp=sharing
+  <br>https://drive.google.com/file/d/1Ufb45F8xoQyh2u7COBuLDubMfAVhlgce/view?usp=sharing
 * Locate Mastermind.apk (in downloads or where downloads are stored)
 * Install Mastermind.apk 
 
