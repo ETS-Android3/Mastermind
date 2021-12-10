@@ -76,7 +76,7 @@ While keeping the deadline in mind, I analyzed which features would impact users
 While building, I developed small scale implementations of each feature while keeping scalibility in mind. For example, I developed and tested the game with a secret code of length two with only 1 and 2 as possible numbers. Since I wanted to make sure it is scalable, I implemented dynamic button creation for more challenging levels with larger number variety. This allowed me to develop and debug the code faster. 
 
 ### Debugging & Testing
-* After completing parts of a feature, I ran and debuged the program to make sure that the application worked. This was done consistently throughout the development process. After completing a feature, I tested the feature keeping in mind edge cases and different situations the user might be in. For example, I tested how accurately the application matched user guess and secret code by inputting unfilled guesses, partly filled guesses, no matches, all matches, repeated numbers in guess (ex. comparing "1234" while guess is "2222").
+After completing parts of a feature, I ran and debuged the program to make sure that the application worked. This was done consistently throughout the development process. After completing a feature, I tested the feature keeping in mind edge cases and different situations the user might be in. For example, I tested how accurately the application matched user guess and secret code by inputting unfilled guesses, partly filled guesses, no matches, all matches, repeated numbers in guess (ex. comparing "1234" while guess is "2222"). Going forward, I will continue to fix issues regarding data persistence during application pause and orientation change as well and accommodate for devices of different sizes.
 
 ### Creative Extensions
 * Implemented
@@ -103,7 +103,7 @@ While building, I developed small scale implementations of each feature while ke
 
 ### How to Run on Mobile Device
 * Download Mastermind.apk on mobile device: 
-  <br>https://drive.google.com/file/d/1Ufb45F8xoQyh2u7COBuLDubMfAVhlgce/view?usp=sharing
+  <br>https://drive.google.com/file/d/1o2q29E7yBUi3rLXdZKwuDAstzKgI9-Bq/view?usp=sharing
 * Locate Mastermind.apk (in downloads or where downloads are stored)
 * Install Mastermind.apk 
 
@@ -119,3 +119,9 @@ While building, I developed small scale implementations of each feature while ke
 
 ### UI Guide
 <img src="ui_guide.png" width=600>
+https://unsplash.com/photos/_u3rMKylNdQ
+
+## Resources
+* Background by <a href="https://unsplash.com/photos/_u3rMKylNdQ">Yener Ozturk</a>
+* "Caves of Dawn" by <a href="https://pixabay.com/music/ambient-caves-of-dawn-10376/">GuilhermeBernardes</a>
+* "Dead-By-Daylight" by <a href="https://pixabay.com/music/build-up-scenes-dead-by-daylight-10243/">TommyMutiu</a>
