@@ -32,6 +32,12 @@ import javax.annotation.Nullable;
 
 import okhttp3.Headers;
 
+/**
+ * Main activity of Mastermind game.
+ *
+ * @author Kania Gandasetiawan
+ * @version 1.0
+ */
 public class MainActivity extends AppCompatActivity
         implements PopupMenu.OnMenuItemClickListener, GameEndDialog.GameEndDialogListener {
 
@@ -123,11 +129,6 @@ public class MainActivity extends AppCompatActivity
      * example, a secret number of "1 2 3 1" would have a freqyency array of [0, 2, 1, 1].
      */
     private void querySecretNumber() {
-//        secretNumber = ("1\n2\n3\n4").split("\n");
-//        frequencyOfSecretNumbers = new int[numberMax + 1];
-//        for (String number : secretNumber) {
-//            frequencyOfSecretNumbers[Integer.parseInt(number)] += 1;
-//        }
 
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
