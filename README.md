@@ -119,7 +119,6 @@ After completing parts of a feature, I ran and debuged the program to make sure 
 
 ### UI Guide
 <img src="ui_guide.png" width=600>
-https://unsplash.com/photos/_u3rMKylNdQ
 
 ## Resources
 * Background by <a href="https://unsplash.com/photos/_u3rMKylNdQ">Yener Ozturk</a>
