@@ -417,37 +417,30 @@ public class MainActivity extends AppCompatActivity
         }
         else {
             ArrayList<Integer> matchedGuess = new ArrayList<>();
-            ArrayList<String> guessCopy = new ArrayList<>();
-
-            for (String number : guess) {
-                guessCopy.add(number);
-            }
+            String[] guessCopy = Arrays.copyOf(guess, secretNumberLength);
 
             int[] frequencyOfSecretNumbersCopy =
                     Arrays.copyOf(frequencyOfSecretNumbers, numberMax + 1);
-            ArrayList<Integer> removeNumberInGuess = new ArrayList<Integer>(secretNumberLength);
 
             // Check location matches
             for (int i = 0; i < secretNumberLength; ++i) {
-                if (guessCopy.get(i).equals(secretNumber[i])
+                if (guessCopy[i].equals(secretNumber[i])
                         && frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] > 0) {
                     matchedGuess.add(2);
-                    removeNumberInGuess.add(i);
                     frequencyOfSecretNumbersCopy[Integer.parseInt(guess[i])] -= 1;
+                    guessCopy[i] = "-1";
                 }
             }
 
-            for (int index : removeNumberInGuess) {
-                guessCopy.remove(index);
-            }
-
             // Check value matches
-            int lengthOfGuessCopy = guessCopy.size();
+            for (int i = 0; i < secretNumberLength; ++i) {
+                if (guessCopy[i] != "-1") {
+                    int matchedValue = Integer.parseInt(guessCopy[i]);
 
-            for (int i = 0; i < lengthOfGuessCopy; ++i) {
-                if (frequencyOfSecretNumbersCopy[Integer.parseInt(guessCopy.get(i))] > 0) {
-                    matchedGuess.add(1);
-                    frequencyOfSecretNumbersCopy[Integer.parseInt(guessCopy.get(i))] -= 1;
+                    if (frequencyOfSecretNumbersCopy[matchedValue] > 0) {
+                        matchedGuess.add(1);
+                        frequencyOfSecretNumbersCopy[matchedValue] -= 1;
+                    }
                 }
             }
             Log.i(TAG, "Matched numbers: " + matchedGuess.toString());
@@ -462,7 +455,7 @@ public class MainActivity extends AppCompatActivity
             // Update guesses used
             guessUsed();
             updateGuessRemaining();
-
+s
             if (remainingGuessExists()) {
                 resetGuessBoxes();
             } else {
