@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity
             // Update guesses used
             guessUsed();
             updateGuessRemaining();
-s
+
             if (remainingGuessExists()) {
                 resetGuessBoxes();
             } else {
